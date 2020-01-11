@@ -66,7 +66,14 @@ public abstract class Obstacle extends Tile {
     }
 
     //Fonction qui renvoie la valeur de canMelt
-    public abstract boolean canMelt();
+    public boolean canMelt(){
+        return m_canMelt;
+    };
+
+    @Override
+    public boolean canMove(){
+        return m_canMove;
+    }
 
 
     // Fonction pour savoir si on peut placer l'obstacle

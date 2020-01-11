@@ -1,4 +1,5 @@
 import CARDS.*;
+import GAME.Board;
 import GAME.Color;
 import TILES.Obstacles.DeckObstacles;
 import TILES.Obstacles.HandObstacles;
@@ -19,7 +20,7 @@ public class RobotTurtles {
     public static void main(String[] args) {
         Card c1, c2;
         c1 = new Card(Color.BLEU);
-        c2 = new Card(Color.JAUNE);
+
     /*
         //Créer hand :
         HandCards h1 = new HandCards();
@@ -41,7 +42,7 @@ public class RobotTurtles {
         System.out.println("h1 : " + h1.showHand());
         System.out.println("d1: " + d1.showHand());
 
-    */
+
 
 
         //Créer main d'obstacles :
@@ -60,7 +61,13 @@ public class RobotTurtles {
         System.out.println("nb de cartes : " + d2.getAmount());
 
 
+     */
 
+        //Test du plateau
+
+        Board board = Board.createStandardBoard(4);
+
+        System.out.println(board.printBoard());
 
 
 

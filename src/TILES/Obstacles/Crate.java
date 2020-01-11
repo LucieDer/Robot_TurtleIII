@@ -1,5 +1,6 @@
 package TILES.Obstacles;
 
+import GAME.Player;
 import TILES.Turtle;
 import TILES.Type;
 
@@ -18,54 +19,38 @@ public class Crate extends Obstacle {
     m_canMelt -> le mur ne peut pas fondre
      */
 
-    // Même constructeur que pour obstacle
-    public Crate(boolean isOnBoard, Type type, int x, int y, Turtle turtle){
-        super(isOnBoard, type, x, y , turtle);
-        m_material = Material.BOIS;
-        m_canMove = true;
-        m_canMelt = false;
-    }
-
-    // Si la caisse est sur le plateau
-    public Crate(boolean isOnBoard, Type type, int x, int y){
-        super(isOnBoard, type, x, y);
+    // Si le mur est sur le plateau
+    public Crate(boolean isOnBoard, int x, int y){
+        super(isOnBoard, x, y);
         m_material = Material.BOIS;
         m_canMove = true;
         m_canMelt = false;
     }
 
 
-    // Si la caisse n'est pas sur le plateau mais qu'elle est dans la main d'un joueur
-    public Crate(boolean isOnBoard, Type type, Turtle turtle){
-        super(isOnBoard, type, turtle);
+
+    // Si le mur n'est pas sur le plateau mais qu'il est dans la main d'un joueur
+    public Crate(boolean isOnBoard, Player player){
+        super(isOnBoard, player);
         m_material = Material.BOIS;
         m_canMove = true;
         m_canMelt = false;
     }
 
-
-    // Si la caisse est dans la pioche : elle n'est ni sur le plateau, ni dans la main d'un joueur
-    public Crate(boolean isOnBoard, Type type){
-        super(isOnBoard, type);
+    // Si le mur est dans la pioche : il n'est ni sur le plateau si dans la main d'un joueur
+    public Crate(boolean isOnBoard){
+        super(isOnBoard);
         m_material = Material.BOIS;
         m_canMove = true;
         m_canMelt = false;
     }
 
+    @Override
+    public void updatePosition() {
+
+    }
 
 
     //METHODES
 
-    // Retourne si la caisse peut fondre
-    @Override
-    public boolean canMelt() {
-        return m_canMelt;
-    }
-
-
-    // Retourne si la caisse peut bouger
-    @Override
-    public boolean canMove() {
-        return m_canMove;
-    }
 }

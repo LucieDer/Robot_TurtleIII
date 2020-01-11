@@ -2,7 +2,9 @@ package GAME;
 
 import TILES.Tile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /*
@@ -14,15 +16,18 @@ public abstract class Square {
     protected int m_y;
 
 
-    private static final Map<int[], EmptySquare> EMPTY_SQUARE = createAllPossibleEmptySquare();
+    private static final Map<List<Integer>, EmptySquare> EMPTY_SQUARE = createAllPossibleEmptySquare();
 
     //Créer plateau vide
-    private static  Map<int[], EmptySquare> createAllPossibleEmptySquare() {
-        final Map<int[], EmptySquare> emptySquareMap = new HashMap<>();
-
+    private static  Map<List<Integer>, EmptySquare> createAllPossibleEmptySquare() {
+        final Map<List<Integer>, EmptySquare> emptySquareMap = new HashMap<>();
+        List<Integer> position = new ArrayList<>();
         for (int i = 0; i<BoardUtils.NUM_SQUARE_PER_COLUMN; i++){
             for(int j=0; j<BoardUtils.NUM_SQUARE_PER_COLUMN; j++){
-                emptySquareMap.put(new int[] {i,j}, new EmptySquare(i,j));
+                position.add(i);
+                position.add(j);
+                emptySquareMap.put(position, new EmptySquare(i,j));
+                position.clear();
             }
 
         }
@@ -31,7 +36,12 @@ public abstract class Square {
 
 
     public static Square createSquare(final int x, final int y, final Tile tile){
-        return tile != null ? new OccupiedSquare(x, y, tile) : EMPTY_SQUARE.get(new int[]{x,y});
+        List<Integer> position = new ArrayList<>(){{
+            add(x);
+            add(y);
+        }};
+        //return tile != null ? new OccupiedSquare(x, y, tile) : EMPTY_SQUARE.get(position);
+        return tile != null ? new OccupiedSquare(x, y, tile) : new EmptySquare( x, y);
     }
 
 
@@ -45,10 +55,26 @@ public abstract class Square {
 
     public abstract Tile getTile();
 
+    //Pour avoir la valeur du carré (vide ou non)
+    public abstract String getSquareValue();
+
+
+
+
+
+
+
+
+
     //Classe fille pour emplacement vide
     public static final class EmptySquare extends Square{
         EmptySquare(final int x, final int y){
             super( x, y);
+        }
+
+        @Override
+        public String getSquareValue() {
+            return "-";
         }
 
         @Override
@@ -71,6 +97,11 @@ public abstract class Square {
         OccupiedSquare(final int x, final int y, Tile tileOnSquare){
             super(x,y);
             this.tileOnSquare = tileOnSquare;
+        }
+
+        @Override
+        public String getSquareValue(){
+            return this.tileOnSquare.getType();
         }
 
         @Override

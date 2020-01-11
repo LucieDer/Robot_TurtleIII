@@ -40,9 +40,9 @@ public class Program {
 
     //Accéder au joueur associé au programme
     public Player getM_player(){
-        return m_player
+        return m_player;
     }
-
+/*
     //Va créer la liste de mouvements à partir des cartes présentes dans le programme
     public Collection<Move> calculateMoves(){
         final List<Move> moves = new ArrayList<>();
@@ -65,7 +65,7 @@ public class Program {
             }
         }
     }
-
+*/
     // Exécuter le programme A COMPLETER
     public void executeProgram(){
 

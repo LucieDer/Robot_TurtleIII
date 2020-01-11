@@ -7,6 +7,9 @@ Classe mère pour les tuiles
 
 import GAME.Color;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Tile {
 
 
@@ -28,7 +31,7 @@ public abstract class Tile {
     public Tile(boolean isOnBoard, Type type, int x, int y){
         m_type = type;
         m_isOnBoard = isOnBoard;
-        if (isOnBoard){
+        if (!isOnBoard){
             m_x = 999;
             m_y = 999;
         }
@@ -92,30 +95,36 @@ public abstract class Tile {
     }
 
     //Fonction pour récupérer la position de la tuile
-    public int[] getTilePosition(){
-        int[] position = new int[] {m_x, m_y};
+    public List<Integer> getTilePosition(){
+        List<Integer> position = new ArrayList<Integer>();
+        position.add(m_x);
+        position.add(m_y);
         return position;
     };
 
-    //Fonction pour déterminer si la tuile peut être placée à un endroit
-    public abstract boolean canPut(int x, int y);
 
-    //Fonction pour déterminer si la tuile peut se déplacer
-    public abstract boolean canMove();
 
     //Changer valeur de isOnBoard
     public void setM_isOnBoard(boolean isOnBoard){
         this.m_isOnBoard = isOnBoard;
     }
 
-    //Changer les coordonnées de la tuile
-    public abstract void updatePosition();
-
     //Fonction pour placer une tuile si canPut est vrai
     public void putOnBoard(int x, int y){
 
     }
 
+
+    //METHODES ABSTRAITES
+
+    //Changer les coordonnées de la tuile
+    public abstract void updatePosition();
+
+    //Fonction pour déterminer si la tuile peut être placée à un endroit
+    public abstract boolean canPut(int x, int y);
+
+    //Fonction pour déterminer si la tuile peut se déplacer
+    public abstract boolean canMove();
 
 
 }

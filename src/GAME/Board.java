@@ -5,34 +5,39 @@ import TILES.Obstacles.StoneWall;
 import TILES.Tile;
 import TILES.Turtle;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Board {
 
 
-    private final Square[][] gameBoard;
+    //private final Square[][] gameBoard;
+    private final Map<List<Integer>, Square> gameBoard;
     private int m_nbOfPlayers;
 /*
     private Board(Builder builder, int nbOfPlayers){
         this.gameBoard = createGameBoard(builder);
         this.m_nbOfPlayers = nbOfPlayers;
     }
-lalala
+
  */
 
     private Board(Builder builder){
         this.gameBoard = createGameBoard(builder);
     }
 
-    @Override
-    public String toString(){
+
+    public String printBoard(){
         final StringBuilder builder = new StringBuilder();
+        List<Integer> position = new ArrayList<>();
+
         for (int i=0; i<BoardUtils.NUM_SQUARE_PER_COLUMN; i++){
-            for(int j=0; i<BoardUtils.NUM_SQUARE_PER_LIGN; j++){
-                final String tileText = prettyPrint(this.gameBoard[i][j]);
+            for(int j=0; j<BoardUtils.NUM_SQUARE_PER_LIGN; j++){
+                //final String tileText = prettyPrint(this.gameBoard[i][j]);
+                position.add(i);
+                position.add(j);
+                final String tileText = this.gameBoard.get(position).getSquareValue();
                 builder.append(String.format("%3s", tileText));
+                position.clear();
 
             }
             builder.append("\n");
@@ -40,26 +45,50 @@ lalala
         return builder.toString();
     }
 
+
+
+    /*
     private static String prettyPrint(final Square square) {
-        if(square.isSquareOccupied()){
-            return square.getTile().getType();
+        return square.toString();
+    }
+
+ */
+
+    public Square getSquare(final List<Integer> position){
+        return gameBoard.get(position);
+    }
+
+
+
+    /*Va créer une plateau qui représenté 64 cases (Empy ou Occupied) et de leur position
+    Le plateau va être crée à partir du Builder qui contenait la liste des pièces et de leur position
+     */
+    private static Map<List<Integer>, Square> createGameBoard(final Builder builder){
+        final Map<List<Integer>, Square> squares = new HashMap<>();
+        int x, y;
+
+/*
+        for (List<Integer> position : BoardUtils.allPossiblePositions){
+            x = position.get(0);
+            y = position.get(1);
+            Square put = squares.put(position, Square.createSquare(x, y, builder.boardConfig.get(position)));
         }
-    }
 
-    public Square getSquare(final int[] position){
-        return gameBoard[position[0]][position[1]];
-    }
+ */
 
 
-
-    //Va créer un tableau[8][8] qui va représenter le plateau
-    private static Square[][] createGameBoard(final Builder builder){
-        final Square[][] squares = new Square[BoardUtils.NUM_SQUARE_PER_LIGN][BoardUtils.NUM_SQUARE_PER_COLUMN];
         for (int i=0; i< BoardUtils.NUM_SQUARE_PER_LIGN; i++){
             for (int j=0; j< BoardUtils.NUM_SQUARE_PER_COLUMN; j++){
-                squares[i][j] = Square.createSquare(i, j, builder.boardConfig.get(new int[] {i, j}));
+                List<Integer> position = new ArrayList<>(); //stocker les index
+                position.add(i);
+                position.add(j);
+                Square put = squares.put(position, Square.createSquare(i, j, builder.boardConfig.get(position))); //Collections.unmodifiableList va copier la liste
+                //squares[i][j] = Square.createSquare(i, j, builder.boardConfig.get(new int[] {i, j}));
+
             }
         }
+
+
         return squares;
     }
 
@@ -127,10 +156,11 @@ lalala
 
     public static class Builder{
 
-        Map<int[], Tile> boardConfig;
+        Map<List<Integer>, Tile> boardConfig;
         Player nextMoveMaker;
 
         public Builder(){
+            this.boardConfig = new HashMap<>();
         }
 
         public Builder setTile(final Tile tile){

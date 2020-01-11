@@ -26,7 +26,7 @@ public class DeckObstacles extends HandObstacles {
                 // 20 tuiles PIERRE
                 if (m.getMaterialValue() == "Pierre"){
                     for(int j=0 ; j < stone; j++){
-                        Obstacle obstacle = new StoneWall(false, Type.OBSTACLE);
+                        Obstacle obstacle = new StoneWall(false);
                         this.add(obstacle);
                     }
                 }
@@ -34,7 +34,7 @@ public class DeckObstacles extends HandObstacles {
                 // 12 tuiles GLACE
                 if (m.getMaterialValue() == "Glace"){
                     for(int j=0 ; j < ice; j++){
-                        Obstacle obstacle = new IceWall(false, Type.OBSTACLE);
+                        Obstacle obstacle = new IceWall(false);
                         this.add(obstacle);
                     }
                 }
@@ -42,7 +42,7 @@ public class DeckObstacles extends HandObstacles {
                 // 4 tuiles BOIS
                 if (m.getMaterialValue() == "Bois"){
                     for(int j=0 ; j < crate; j++){
-                        Obstacle obstacle = new Crate(false, Type.OBSTACLE);
+                        Obstacle obstacle = new Crate(false);
                         this.add(obstacle);
                     }
                 }

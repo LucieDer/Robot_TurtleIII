@@ -50,19 +50,6 @@ public class StoneWall extends Obstacle {
 
     //METHODES
 
-    // Retourne si le mur peut fondre
-    @Override
-    public boolean canMelt() {
-        return m_canMelt;
-    }
-
-
-    // Retourne si le mur peut bouger
-    @Override
-    public boolean canMove() {
-        return m_canMove;
-    }
-
     @Override
     public void updatePosition() {
 

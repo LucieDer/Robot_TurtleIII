@@ -98,4 +98,7 @@ public abstract class Tile {
     //Fonction pour déterminer si la tuile peut se déplacer
     public abstract boolean canMove();
 
+    //Fonction pour déterminer la couleur si la tuile en a une
+    public abstract Color getM_color();
+
 }

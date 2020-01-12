@@ -2,7 +2,7 @@ package CARDS;
 
 import GAME.Board;
 import GAME.Move;
-import PLAYER.Player;
+import PLAYERS.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -27,6 +27,11 @@ public class Jewel extends Tile {
     }
 
     @Override
+    public Color getM_color() {
+        return m_color;
+    }
+
+    @Override
     public void updatePosition() {
     }
 }

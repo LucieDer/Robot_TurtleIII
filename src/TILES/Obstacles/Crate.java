@@ -1,6 +1,6 @@
 package TILES.Obstacles;
 
-import PLAYER.Player;
+import PLAYERS.Player;
 
 /*
 Classe pour la caisse en bois

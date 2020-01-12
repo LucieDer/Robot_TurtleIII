@@ -1,6 +1,6 @@
 package TILES.Obstacles;
 
-import PLAYER.Player;
+import PLAYERS.Player;
 
 /*
 Classe mur de pierre qui hérite de la classe obstacle

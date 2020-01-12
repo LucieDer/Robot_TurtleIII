@@ -5,17 +5,7 @@ import TILES.Obstacles.DeckObstacles;
 import TILES.Obstacles.HandObstacles;
 
 public class RobotTurtles {
-    public static final int Tile_Size = 80;
-    public static final int height = 8;
-    public static final int width = 8;
 
-    public static final char VIDE = 'o';
-    public static final char TORTUE = 't';
-    public static final char PIERRE = 'p';
-    public static final char GLACE = 'g';
-    public static final char CAISSE = 'c';
-
-    public static char[][] plateau = new char[height][width];
 
     public static void main(String[] args) {
         Card c1, c2;

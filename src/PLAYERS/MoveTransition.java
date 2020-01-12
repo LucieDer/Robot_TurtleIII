@@ -1,4 +1,4 @@
-package PLAYER;
+package PLAYERS;
 
 /* Classe pour faire la transition entre les plateaux
  *

@@ -1,6 +1,7 @@
 package GAME;
 
-import PLAYER.Player;
+import PLAYERS.*;
+
 import TILES.Jewel;
 import TILES.Obstacles.StoneWall;
 import TILES.Tile;
@@ -9,16 +10,86 @@ import TILES.Turtle;
 import java.util.*;
 
 public class Board {
+    public final Collection<Tile> activeTurtles;
+    public final Collection<Tile> activeTiles;
+    public Turtle redTurtle;
+    public Turtle greenTurtle;
+    public Turtle purpleTurtle;
+    public Turtle blueTurtle;
 
-
+    //Joueurs
+    private RedPlayer redPlayer = null;
+    private GreenPlayer greenPlayer = null;
+    private PurplePlayer purplePlayer = null;
+    private BluePlayer bluePlayer = null;
 
     private final Map<List<Integer>, Square> gameBoard;
     private int m_nbOfPlayers;
 
+    private final Player currentPlayer;
+
 
 
     private Board(Builder builder){
+
         this.gameBoard = createGameBoard(builder);
+        //this.m_nbOfPlayers = builder.m_nbOfPlayers;
+        this.activeTiles = calculateActiveTiles(this.gameBoard);
+        this.activeTurtles = calculateActiveTurtles(this.gameBoard);
+        this.m_nbOfPlayers = activeTurtles.size();
+        this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.m_nbOfPlayers, this.redPlayer, this.greenPlayer, this.purplePlayer, this.bluePlayer);
+
+        switch(this.m_nbOfPlayers){
+            case 2:
+                this.redPlayer = new RedPlayer(this);
+                this.greenPlayer = new GreenPlayer(this);
+                break;
+            case 3:
+                this.redPlayer = new RedPlayer(this);
+                this.greenPlayer = new GreenPlayer(this);
+                this.purplePlayer = new PurplePlayer(this);
+                break;
+            case 4:
+                this.redPlayer = new RedPlayer(this);
+                this.greenPlayer = new GreenPlayer(this);
+                this.purplePlayer = new PurplePlayer(this);
+                this.bluePlayer = new BluePlayer(this);
+                break;
+
+
+        }
+
+
+    }
+
+    public Player getCurrentPlayer(){
+        return this.currentPlayer;
+    }
+
+    public Collection<Tile> calculateActiveTiles(Map<List<Integer>, Square> gameBoard) {
+        final List<Tile> activeTiles = new ArrayList<>();
+        for (final Square square : gameBoard.values()){
+            if(square.isSquareOccupied()){
+                final Tile tile = square.getTile();
+                activeTiles.add(tile);
+            }
+        }
+        return activeTiles;
+    }
+
+    //Va stocker toutes les tortues sur le plateau dans une liste
+    private Collection<Tile> calculateActiveTurtles(Map<List<Integer>, Square> gameBoard) {
+        final List<Tile> activeTurtles = new ArrayList<>();
+        for (final Square square : gameBoard.values()){
+            if(square.isSquareOccupied()){
+                if(square.getTile().getType() == "Tortue"){
+                    final Tile tile = square.getTile();
+                    activeTurtles.add(tile);
+                }
+
+            }
+        }
+        return activeTurtles;
     }
 
     //Obtenir le nombre de joueurs
@@ -57,11 +128,79 @@ public class Board {
         return gameBoard.get(position);
     }
 
+    //Obtenir la liste de tortues sur le plateau
+    public Collection<Tile> getActiveTurtles(){
+        return this.activeTurtles;
+    }
 
+    //Accéder à la tortue rouge
+    public Tile getRedTurtle(){
+        for(Tile turtle : this.activeTurtles){
+            if(turtle.getType() == "Tortue"){
+                if(turtle.getM_color() == Color.ROUGE){
+                    return turtle;
+                }else return null;
+            }else return null;
+        }return null;
+    }
+
+
+    //Accéder à la tortue verte
+    public Tile getGreenTurtle(){
+        for(Tile turtle : this.activeTurtles){
+            if(turtle.getType() == "Tortue"){
+                if(turtle.getM_color() == Color.VERT){
+                    return turtle;
+                }else return null;
+            }else return null;
+        }return null;
+    }
+
+    //Accéder à la tortue violette
+    public Tile getPurpleTurtle(){
+        for(Tile turtle : this.activeTurtles){
+            if(turtle.getType() == "Tortue"){
+                if(turtle.getM_color() == Color.VIOLET){
+                    return turtle;
+                }else return null;
+            }else return null;
+        }return null;
+    }
+
+    //Accéder à la tortue bleue
+    public Tile getBlueTurtle(){
+        for(Tile turtle : this.activeTurtles){
+            if(turtle.getType() == "Tortue"){
+                if(turtle.getM_color() == Color.BLEU){
+                    return turtle;
+                }else return null;
+            }else return null;
+        }return null;
+    }
+
+
+    //Accéder aux joueurs :
+
+
+    public RedPlayer getRedPlayer() {
+        return redPlayer;
+    }
+
+    public GreenPlayer getGreenPlayer() {
+        return greenPlayer;
+    }
+
+    public PurplePlayer getPurplePlayer() {
+        return purplePlayer;
+    }
+
+    public BluePlayer getBluePlayer() {
+        return bluePlayer;
+    }
 
     /*Va créer une plateau qui représenté 64 cases (Empy ou Occupied) et de leur position
-    Le plateau va être crée à partir du Builder qui contenait la liste des pièces et de leur position
-     */
+                    Le plateau va être crée à partir du Builder qui contenait la liste des pièces et de leur position
+                     */
     private static Map<List<Integer>, Square> createGameBoard(final Builder builder){
         final Map<List<Integer>, Square> squares = new HashMap<>();
         int x, y;
@@ -83,7 +222,7 @@ public class Board {
 
     //Va placer les tuiles en fonction du nombre de joueurs dans le builder
     public static Board createStandardBoard(int nbOfPlayers){
-        final Builder builder = new Builder();
+        final Builder builder = new Builder(nbOfPlayers);
 
         switch (nbOfPlayers){
             case 2:
@@ -141,18 +280,23 @@ public class Board {
         }
 
         Board newBoard = builder.build();
-        newBoard.setM_nbOfPlayers(nbOfPlayers);
 
         return newBoard;
+    }
+
+    public Collection<Tile> getActiveTiles() {
+        return calculateActiveTiles(this.gameBoard);
     }
 
 
     public static class Builder{
 
         Map<List<Integer>, Tile> boardConfig;
-        Player nextMoveMaker;
+        final int m_nbOfPlayers;
+        Color nextMoveMaker;
 
-        public Builder(){
+        public Builder(final int nbOfPlayers){
+            this.m_nbOfPlayers = nbOfPlayers;
             this.boardConfig = new HashMap<>();
         }
 
@@ -161,7 +305,7 @@ public class Board {
             return this;
         }
 
-        public Builder setMoveMaker(final Player nextMoveMaker){
+        public Builder setMoveMaker(final Color nextMoveMaker){
             this.nextMoveMaker = nextMoveMaker;
             return this;
         }

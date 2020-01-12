@@ -1,6 +1,8 @@
 package GAME;
 
 import TILES.Tile;
+import GAME.*;
+import java.util.List;
 
 /*
 Classe pour les mouvements effectués
@@ -10,6 +12,8 @@ Classe abstraites car trois types de mouvement : Avancer(bleu), tourner à 90° 
 public abstract class Move {
     final Board m_board;
     final Tile m_movedTile;
+    List<Integer> destinationCoordinate;
+    int destinationOrientation;
 
     /*
     CONSTRUCTEURS
@@ -25,10 +29,11 @@ public abstract class Move {
         this.m_movedTile = tile;
     }
 
+    public List<Integer> getDestinationCoordinate(){
+        return this.getDestinationCoordinate();
+    }
 
-
-
-
+    public abstract Board execute();
 
 
     // Classe fille mouvement Avancer
@@ -36,6 +41,24 @@ public abstract class Move {
 
         public GoForward(Board board, Tile tile) {
             super(board, tile);
+        }
+
+        @Override
+        public Board execute() {
+            final Board.Builder builder = new Board.Builder(this.m_board.getM_nbOfPlayers());
+            for(final Tile tile : this.m_board.getActiveTiles()){
+                if(!this.m_movedTile.equals(tile)){
+                    builder.setTile(tile);
+                }
+            }
+
+            //Représenter la pièce déplacée
+            builder.setTile(null);
+            //Passer au joueur suivant
+            builder.setMoveMaker(this.m_board.getCurrentPlayer().getNextPlayer().getColor());
+
+
+            return builder.build();
         }
     }
 
@@ -46,6 +69,11 @@ public abstract class Move {
             super(board, tile);
             this.m_orientation = orientation;
         }
+
+        @Override
+        public Board execute() {
+            return null;
+        }
     }
 
     //Classe fille mouvement Tourner à gauche
@@ -55,6 +83,11 @@ public abstract class Move {
             super(board, tile);
             this.m_orientation = orientation;
         }
+
+        @Override
+        public Board execute() {
+            return null;
+        }
     }
 
     //Classe fille mouvement Laser
@@ -63,6 +96,25 @@ public abstract class Move {
 
         public Laser(final Board board, final Tile tile){
             super(board, tile);
+        }
+
+        @Override
+        public Board execute() {
+            return null;
+        }
+    }
+
+
+    public static final class PutObstacle extends Move{
+
+        public PutObstacle(Board board, Tile tile, List<Integer> destinationCoordinate) {
+            super(board, tile);
+            this.destinationCoordinate = destinationCoordinate;
+        }
+
+        @Override
+        public Board execute() {
+            return null;
         }
     }
 

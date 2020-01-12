@@ -1,6 +1,7 @@
 package TILES.Obstacles;
 
-import PLAYER.Player;
+import GAME.Color;
+import PLAYERS.Player;
 import TILES.*;
 
 /*
@@ -80,5 +81,11 @@ public abstract class Obstacle extends Tile {
     @Override
     public boolean canPut(int x, int y) {
         return false;
+    }
+
+
+    @Override
+    public Color getM_color(){
+        return null;
     }
 }

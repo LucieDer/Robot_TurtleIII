@@ -41,20 +41,7 @@ public abstract class Tile {
             m_y = y;
         }
     }
-    /*
 
-    //Si la tuile est sur le plateau : on initialise x et y
-    public Tile(boolean isOnBoard, Type type, int x, int y, Color color){
-        m_type = type;
-        m_isOnBoard = isOnBoard;
-        m_color = color;
-        if (isOnBoard){
-            m_x = x;
-            m_y = y;
-        }
-    }
-
-*/
 
     //Si la tuile n'est pas sur le plateau mais qu'elle est dans une main d'un joueur
     public Tile(boolean isOnBoard, Type type){
@@ -66,21 +53,6 @@ public abstract class Tile {
         }
     }
 
-
-
-/*
-    //Si la tuile n'est pas sur le plateau et qu'elle est dans la pioche
-    public Tile(boolean isOnBoard, Type type){
-        m_type = type;
-        m_isOnBoard = isOnBoard;
-        if (!isOnBoard){
-            m_x = 999;
-            m_y = 999;
-        }
-    }
-
-
- */
 
 
 
@@ -125,6 +97,5 @@ public abstract class Tile {
 
     //Fonction pour déterminer si la tuile peut se déplacer
     public abstract boolean canMove();
-
 
 }

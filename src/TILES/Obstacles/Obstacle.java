@@ -1,6 +1,6 @@
 package TILES.Obstacles;
 
-import GAME.Player;
+import PLAYER.Player;
 import TILES.*;
 
 /*

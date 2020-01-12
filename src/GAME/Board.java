@@ -1,5 +1,6 @@
 package GAME;
 
+import PLAYER.Player;
 import TILES.Jewel;
 import TILES.Obstacles.StoneWall;
 import TILES.Tile;
@@ -10,22 +11,27 @@ import java.util.*;
 public class Board {
 
 
-    //private final Square[][] gameBoard;
+
     private final Map<List<Integer>, Square> gameBoard;
     private int m_nbOfPlayers;
-/*
-    private Board(Builder builder, int nbOfPlayers){
-        this.gameBoard = createGameBoard(builder);
-        this.m_nbOfPlayers = nbOfPlayers;
-    }
 
- */
+
 
     private Board(Builder builder){
         this.gameBoard = createGameBoard(builder);
     }
 
+    //Obtenir le nombre de joueurs
+    public int getM_nbOfPlayers() {
+        return m_nbOfPlayers;
+    }
 
+
+    public void setM_nbOfPlayers(int m_nbOfPlayers) {
+        this.m_nbOfPlayers = m_nbOfPlayers;
+    }
+
+    //Afficher le plateau dans le terminal
     public String printBoard(){
         final StringBuilder builder = new StringBuilder();
         List<Integer> position = new ArrayList<>();
@@ -47,13 +53,6 @@ public class Board {
 
 
 
-    /*
-    private static String prettyPrint(final Square square) {
-        return square.toString();
-    }
-
- */
-
     public Square getSquare(final List<Integer> position){
         return gameBoard.get(position);
     }
@@ -67,15 +66,6 @@ public class Board {
         final Map<List<Integer>, Square> squares = new HashMap<>();
         int x, y;
 
-/*
-        for (List<Integer> position : BoardUtils.allPossiblePositions){
-            x = position.get(0);
-            y = position.get(1);
-            Square put = squares.put(position, Square.createSquare(x, y, builder.boardConfig.get(position)));
-        }
-
- */
-
 
         for (int i=0; i< BoardUtils.NUM_SQUARE_PER_LIGN; i++){
             for (int j=0; j< BoardUtils.NUM_SQUARE_PER_COLUMN; j++){
@@ -83,18 +73,18 @@ public class Board {
                 position.add(i);
                 position.add(j);
                 Square put = squares.put(position, Square.createSquare(i, j, builder.boardConfig.get(position))); //Collections.unmodifiableList va copier la liste
-                //squares[i][j] = Square.createSquare(i, j, builder.boardConfig.get(new int[] {i, j}));
 
             }
         }
 
-
         return squares;
     }
 
-    //Va placer les tuiles en fonction du nombre de joueurs
+
+    //Va placer les tuiles en fonction du nombre de joueurs dans le builder
     public static Board createStandardBoard(int nbOfPlayers){
         final Builder builder = new Builder();
+
         switch (nbOfPlayers){
             case 2:
                 // 2 tortues
@@ -150,7 +140,10 @@ public class Board {
 
         }
 
-        return builder.build();
+        Board newBoard = builder.build();
+        newBoard.setM_nbOfPlayers(nbOfPlayers);
+
+        return newBoard;
     }
 
 

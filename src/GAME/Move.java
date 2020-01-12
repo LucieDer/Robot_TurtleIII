@@ -33,12 +33,9 @@ public abstract class Move {
 
     // Classe fille mouvement Avancer
     public static final class GoForward extends Move{
-        final int m_xDestination;
-        final int m_yDestination;
-        public GoForward(final Board board, final Tile tile, final int xDestination, final int yDestination){
+
+        public GoForward(Board board, Tile tile) {
             super(board, tile);
-            this.m_xDestination = xDestination;
-            this.m_yDestination = yDestination;
         }
     }
 

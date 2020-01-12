@@ -1,7 +1,8 @@
 package CARDS;
 
+import GAME.Board;
 import GAME.Move;
-import GAME.Player;
+import PLAYER.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,34 +39,42 @@ public class Program {
         return str;
     }
 
+
+
+
     //Accéder au joueur associé au programme
     public Player getM_player(){
         return m_player;
     }
-/*
+
+
+
     //Va créer la liste de mouvements à partir des cartes présentes dans le programme
     public Collection<Move> calculateMoves(){
         final List<Move> moves = new ArrayList<>();
+        final Board board = this.m_player.getM_Board();
         for (Card c: cards){
             if (c.getColor() == "Bleu"){
                 //TODO ICI
-                moves.add(new Move.GoForward(board, this.m_player.getM_turtle()));
+                moves.add(new Move.GoForward(this.m_player.getM_Board(), this.m_player.getM_turtle()));
             }
             else if (c.getColor() == "Vert"){
                 //TODO ICI
-                moves.add(new Move.TurnLeft(board, this.m_player.getM_turtle()));
+                moves.add(new Move.TurnLeft(this.m_player.getM_Board(), this.m_player.getM_turtle(), this.m_player.getM_turtle().getM_orientation()));
             }
             else if (c.getColor() == "Violet"){
                 //TODO ICI
-                moves.add(new Move.TurnRight(board,this.m_player.getM_turtle() ));
+                moves.add(new Move.TurnRight(this.m_player.getM_Board(), this.m_player.getM_turtle(), this.m_player.getM_turtle().getM_orientation() ));
             }
             else if (c.getColor() == "Bleu"){
                 //TODO ICI
-                moves.add(new Move.Laser(board, this.m_player.getM_turtle()));
+                moves.add(new Move.Laser(this.m_player.getM_Board(), this.m_player.getM_turtle()));
             }
         }
+
+        return moves;
     }
-*/
+
     // Exécuter le programme A COMPLETER
     public void executeProgram(){
 

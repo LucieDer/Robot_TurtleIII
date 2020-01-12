@@ -1,8 +1,6 @@
 package TILES.Obstacles;
 
-import GAME.Player;
-import TILES.Turtle;
-import TILES.Type;
+import PLAYER.Player;
 
 /*
 Classe pour les murs de glace

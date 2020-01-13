@@ -1,8 +1,7 @@
-import CARDS.*;
-import GAME.Board;
-import GAME.Color;
-import TILES.Obstacles.DeckObstacles;
-import TILES.Obstacles.HandObstacles;
+import Engine.GAME.Board;
+import GUI.Table;
+import Engine.CARDS.*;
+import Engine.GAME.Color;
 
 public class RobotTurtles {
 
@@ -55,12 +54,18 @@ public class RobotTurtles {
 
         //Test du plateau
         //blabla
-
-        Board board = Board.createStandardBoard(4);
+/*
+        Board board = Board.createStandardBoard(2);
 
         System.out.println(board.printBoard());
 
 
+ */
+
+
+
+
+        Table table = new Table();
 
 
 

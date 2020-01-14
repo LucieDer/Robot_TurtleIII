@@ -1,5 +1,7 @@
 package Engine.TILES.Obstacles;
 
+import Engine.CARDS.Card;
+
 import java.util.Random;
 
 /*
@@ -37,13 +39,6 @@ public class DeckObstacles extends HandObstacles {
                     }
                 }
 
-                // 4 tuiles BOIS
-                if (m.getMaterialValue() == "Bois"){
-                    for(int j=0 ; j < crate; j++){
-                        Obstacle obstacle = new Crate(false);
-                        this.add(obstacle);
-                    }
-                }
 
         }
     }
@@ -83,5 +78,22 @@ public class DeckObstacles extends HandObstacles {
             }
         }
     }
+
+    //Savoir si le deck est vide
+    public boolean isEmpty(){
+        return (this.getAmount() == 0);
+    }
+
+    //Crée une main en début de partie
+    public HandObstacles createBasicHand(){
+        HandObstacles hand = new HandObstacles();
+        //Distribue 3 obstacles pierre et 2 obstacles glace
+        dealSpecific(hand, "Pierre", 3);
+        dealSpecific(hand, "Glace", 2);
+
+        return hand;
+    }
+
+
 
 }

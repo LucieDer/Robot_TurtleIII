@@ -1,19 +1,24 @@
 package Engine.PLAYERS;
 
 import Engine.CARDS.DeckCards;
+import Engine.CARDS.HandCards;
 import Engine.CARDS.Program;
 import Engine.GAME.Board;
 import Engine.GAME.Color;
 import Engine.GAME.Move;
 import Engine.TILES.Obstacles.DeckObstacles;
+import Engine.TILES.Obstacles.HandObstacles;
 import Engine.TILES.Turtle;
 
 public abstract class Player {
     protected final Board m_board;
     protected Turtle m_turtle;
+
+    //Decks :
     protected Program m_program;
     protected DeckCards m_deckCards;
-    protected DeckObstacles m_deckObstacles;
+    protected HandCards m_handCards;
+    protected HandObstacles m_handObstacles;
     protected boolean m_isWinner = false;
 
 
@@ -45,14 +50,19 @@ public abstract class Player {
         return m_program;
     }
 
-    //Obtenir le deck de cartesassocié au joueur
+    //Obtenir le deck de cartes associé au joueur
     public DeckCards getM_deckCards(){
         return m_deckCards;
     }
 
+    //Obtenir la main de cartes du joueur
+    public HandCards getM_handCards() {
+        return m_handCards;
+    }
+
     //Obtenir le deck d'obstacles associé au joueur
-    public DeckObstacles getM_deckObstacles() {
-        return m_deckObstacles;
+    public HandObstacles getM_HandObstacles() {
+        return m_handObstacles;
     }
 
 
@@ -95,5 +105,19 @@ public abstract class Player {
     //Obtenir le joueur suivant
     public abstract Player getNextPlayer();
 
+    public void setM_program(Program m_program) {
+        this.m_program = m_program;
+    }
 
+    public void setM_deckCards(DeckCards deckCards){
+        this.m_deckCards = deckCards;
+    }
+
+    public void setM_handCards(HandCards m_handCards) {
+        this.m_handCards = m_handCards;
+    }
+
+    public void setM_handObstacles(HandObstacles m_handObstacles){
+        this.m_handObstacles = m_handObstacles;
+    }
 }

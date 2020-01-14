@@ -2,7 +2,6 @@ package GUI;
 
 import Engine.GAME.Board;
 import Engine.GAME.BoardUtils;
-import Engine.TILES.Obstacles.Obstacle;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -17,26 +16,44 @@ import java.util.List;
 
 public class Table {
 
-    private final Color lightTileColor = Color.decode("#FFFACD");
-    private final Color darkTileColor = Color.decode("#593E1A");
-    private static final Dimension OUTER_FRAME_DIMENSION = new Dimension(900,900);
-    private static final Dimension BOARD_PANEL_DIMENSION = new Dimension(400,350) ;
+    private final Color lightTileColor = Color.decode("#b0e0e6");
+    private final Color darkTileColor = Color.decode("#9ec9cf");
+    private static final Dimension OUTER_FRAME_DIMENSION = new Dimension(800,600);
+    private static final Dimension BOARD_PANEL_DIMENSION = new Dimension(400,400) ;
     private static final Dimension SQUARE_PANEL_DIMENSION = new Dimension(10,10) ;
     private static String defaultPieceImagesPath = "ArtTiles/";
 
     private final JFrame gameFrame;
     private final BoardPanel boardPanel;
+    private final ActionPanel actionPanel;
     private final Board RTBoard;
 
     public Table(){
         this.gameFrame = new JFrame("Robot Turtles");
         this.gameFrame.setLayout(new BorderLayout());
+
+        //Créer la bande à dérouler en haut
         final JMenuBar tableMenuBar = createMenuBar();
         this.gameFrame.setJMenuBar(tableMenuBar);
         this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
-        this.RTBoard = Board.createStandardBoard(2);
+
+        //Crée un plateau
+        this.RTBoard = Board.createStandardBoard(3);
         this.boardPanel = new BoardPanel();
+        //this.boardPanel.setBounds(10, 10, 300, 300);
+
+
+        //Crée partie avec les cartes
+        this.actionPanel = new ActionPanel();
+        //this.actionPanel.setBounds(500, 1, 10, 10);
+
+
+
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
+        this.gameFrame.add(this.actionPanel, BorderLayout.EAST);
+        //this.gameFrame.add(debugPanel, BorderLayout.SOUTH);
+
+        gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.gameFrame.setVisible(true);
     }
 
@@ -117,9 +134,10 @@ public class Table {
                         String pathname = defaultPieceImagesPath + board.getSquare(position).getTile().getM_color().getColor() +
                                 board.getSquare(position).getTile().getType() + ".png";
                         //Exemple de nom d'image : "RougeTortue.png"
-                        final BufferedImage image =
+                        BufferedImage image =
                                 ImageIO.read(new File(defaultPieceImagesPath + board.getSquare(position).getTile().getM_color().getColor() +
                                         board.getSquare(position).getTile().getType() + ".png"));
+                        image = BoardUtils.resize(image, 60, 50);
                         add(new JLabel(new ImageIcon(image)));
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -130,20 +148,22 @@ public class Table {
                     try {
                         String pathname = defaultPieceImagesPath + board.getSquare(position).getTile().getM_material() + ".png";
                         //Exemple de nom d'image : "Glace.png"
-                        final BufferedImage image =
+                        BufferedImage image =
                                 ImageIO.read(new File(defaultPieceImagesPath + board.getSquare(position).getTile().getM_material() + ".png"));
+                        image = BoardUtils.resize(image, 60, 50);
                         add(new JLabel(new ImageIcon(image)));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
 
-                else if (board.getSquare(position).getTile().getType() == "Jewel"){
+                else if (board.getSquare(position).getTile().getType() == "Joyau"){
                     try {
                         String pathname = defaultPieceImagesPath + board.getSquare(position).getTile().getType() + ".png";
-                        //Exemple de nom d'image : "Joyau.png"
-                        final BufferedImage image =
+                        //Exemple de nom d'image : "Joyau .png"
+                        BufferedImage image =
                                 ImageIO.read(new File(defaultPieceImagesPath + board.getSquare(position).getTile().getType() + ".png"));
+                        image = BoardUtils.resize(image, 60, 50);
                         add(new JLabel(new ImageIcon(image)));
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -156,9 +176,17 @@ public class Table {
         }
 
         private void assignSquareColor() {
-            boolean isLight = ((squareId + squareId / 8) % 2 == 0);
+            boolean isLight;
+            if(squareId%8 == 0) {
+                int columnId = BoardUtils.convertIntoXYPosition(squareId).get(0);
+                isLight = (columnId%2 == 0);
+            } else  isLight = ((squareId + squareId / 8) % 2 == 0);
             setBackground(isLight ? lightTileColor : darkTileColor);
         }
     }
+
+
+
+
 
 }

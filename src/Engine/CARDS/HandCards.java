@@ -15,6 +15,17 @@ public class HandCards {
         cards = new ArrayList<Card>();
     }
 
+    //Accéder aux cartes
+
+
+    public ArrayList<Card> getCards() {
+        return cards;
+    }
+
+    public Card getCard(Card card){
+        return cards.contains(card)? card : null;
+    }
+
     //Avoir le nombre de cartes dans la main
     public int getAmount(){
         return cards.size();
@@ -32,14 +43,12 @@ public class HandCards {
     }
 
     // Retirer une carte dans la main
-    public void discardOne(Card card){
+    public void throwOne(Card card){
         cards.remove(card);
     }
 
     // Retirer plusieurs cartes dans la main (A TESTER)
-    public void discard(Collection<Card> c){
-        cards.removeAll(c);
-    }
+
 
 
     // Afficher le contenu de la main dans le terminal

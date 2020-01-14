@@ -11,6 +11,10 @@ public final class GreenPlayer extends Player{
     public GreenPlayer(final Board board) {
         super(board);
         this.m_turtle = setM_turtle();
+        this.m_deckCards = board.m_GreenPlayerDeckCards;
+        this.m_handCards = board.m_GreenPlayerHandCards;
+        this.m_handObstacles = board.m_GreenPlayerHandObstacles;
+        this.m_program = board.m_GreenPlayerProgram;
     }
 
     @Override

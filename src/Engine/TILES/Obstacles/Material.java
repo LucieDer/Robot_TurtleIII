@@ -6,8 +6,7 @@ Classe enum pour créer les différents matériaux des obstacles
 
 public enum Material {
     PIERRE("Pierre"),
-    GLACE("Glace"),
-    BOIS("Bois");
+    GLACE("Glace");
 
     private final String materialValue;
 

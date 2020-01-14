@@ -10,6 +10,10 @@ public final class RedPlayer extends Player{
     public RedPlayer(final Board board) {
         super(board);
         this.m_turtle = setM_turtle();
+        this.m_deckCards = board.m_RedPlayerDeckCards;
+        this.m_handCards = board.m_RedPlayerHandCards;
+        this.m_handObstacles = board.m_RedPlayerHandObstacles;
+        this.m_program = board.m_RedPlayerProgram;
     }
 
     @Override

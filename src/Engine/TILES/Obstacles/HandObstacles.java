@@ -27,6 +27,8 @@ public class HandObstacles {
         obstacles.add(obstacle);
     }
 
+
+
     // Vide la main
     public void clear(){
         obstacles.clear();

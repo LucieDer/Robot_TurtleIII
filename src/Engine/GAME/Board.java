@@ -1,8 +1,13 @@
 package Engine.GAME;
 
+import Engine.CARDS.DeckCards;
+import Engine.CARDS.HandCards;
+import Engine.CARDS.Program;
 import Engine.PLAYERS.*;
 
 import Engine.TILES.Jewel;
+import Engine.TILES.Obstacles.DeckObstacles;
+import Engine.TILES.Obstacles.HandObstacles;
 import Engine.TILES.Obstacles.StoneWall;
 import Engine.TILES.Tile;
 import Engine.TILES.Turtle;
@@ -23,6 +28,34 @@ public class Board {
     private PurplePlayer purplePlayer = null;
     private BluePlayer bluePlayer = null;
 
+    //Deck obstacle
+    private DeckObstacles deckObstacles = new DeckObstacles();
+
+    //Joueur Rouge
+    public DeckCards m_RedPlayerDeckCards = null;
+    public Program m_RedPlayerProgram = null;
+    public HandCards m_RedPlayerHandCards = null;
+    public HandObstacles m_RedPlayerHandObstacles = null;
+
+    //Joueur Vert
+    public DeckCards m_GreenPlayerDeckCards = null;
+    public Program m_GreenPlayerProgram = null;
+    public HandCards m_GreenPlayerHandCards = null;
+    public HandObstacles m_GreenPlayerHandObstacles = null;
+
+    //Joueur Violet
+    public DeckCards m_PurplePlayerDeckCards = null;
+    public Program m_PurplePlayerProgram = null;
+    public HandCards m_PurplePlayerHandCards = null;
+    public HandObstacles m_PurplePlayerHandObstacles = null;
+
+    //Joueur Bleu
+    public DeckCards m_BluePlayerDeckCards = null;
+    public Program m_BluePlayerProgram = null;
+    public HandCards m_BluePlayerHandCards = null;
+    public HandObstacles m_BluePlayerHandObstacles = null;
+
+
     private final Map<List<Integer>, Square> gameBoard;
     private int m_nbOfPlayers;
 
@@ -37,6 +70,33 @@ public class Board {
         this.activeTiles = calculateActiveTiles(this.gameBoard);
         this.activeTurtles = calculateActiveTurtles(this.gameBoard);
         this.m_nbOfPlayers = activeTurtles.size();
+
+        //Attribution des tortues
+        this.redTurtle = (Turtle)this.getRedTurtle();
+        this.greenTurtle = (Turtle)this.getGreenTurtle();
+        this.purpleTurtle = (Turtle)this.getPurpleTurtle();
+        this.blueTurtle = (Turtle)this.getBlueTurtle();
+
+        //Attribution des paquets/mains de cartes
+        this.m_RedPlayerDeckCards = builder.m_RedPlayerDeckCards;
+        this.m_RedPlayerHandCards = builder.m_RedPlayerHandCards;
+        this.m_RedPlayerHandObstacles = builder.m_RedPlayerHandObstacles;
+        this.m_RedPlayerProgram = builder.m_RedPlayerProgram;
+
+        this.m_GreenPlayerDeckCards = builder.m_GreenPlayerDeckCards;
+        this.m_GreenPlayerHandCards = builder.m_GreenPlayerHandCards;
+        this.m_GreenPlayerHandObstacles = builder.m_GreenPlayerHandObstacles;
+        this.m_GreenPlayerProgram = builder.m_GreenPlayerProgram;
+
+        this.m_PurplePlayerDeckCards = builder.m_PurplePlayerDeckCards;
+        this.m_PurplePlayerHandCards = builder.m_PurplePlayerHandCards;
+        this.m_PurplePlayerHandObstacles = builder.m_PurplePlayerHandObstacles;
+        this.m_PurplePlayerProgram = builder.m_PurplePlayerProgram;
+
+        this.m_BluePlayerDeckCards = builder.m_BluePlayerDeckCards;
+        this.m_BluePlayerHandCards = builder.m_BluePlayerHandCards;
+        this.m_BluePlayerHandObstacles = builder.m_BluePlayerHandObstacles;
+        this.m_BluePlayerProgram = builder.m_BluePlayerProgram;
 
 
         switch(this.m_nbOfPlayers){
@@ -59,9 +119,14 @@ public class Board {
 
         }
 
+        this.deckObstacles = builder.m_deckObstacles;
         this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.m_nbOfPlayers, this.redPlayer, this.greenPlayer, this.purplePlayer, this.bluePlayer);
 
 
+    }
+
+    public DeckObstacles getDeckObstacles() {
+        return deckObstacles;
     }
 
     public Player getCurrentPlayer(){
@@ -222,10 +287,11 @@ public class Board {
     }
 
 
-    //Va placer les tuiles en fonction du nombre de joueurs dans le builder
+    //Plateau pour début du jeu : va placer les tuiles en fonction du nombre de joueurs dans le builder
     public static Board createStandardBoard(int nbOfPlayers){
         final Builder builder = new Builder(nbOfPlayers);
 
+        //Placement des tuiles
         switch (nbOfPlayers){
             case 2:
                 // 2 tortues
@@ -241,6 +307,21 @@ public class Board {
                 }
 
                 builder.setMoveMaker(Color.ROUGE);
+
+                //Initialisation des paquets de carte :
+                builder.setDeckObstacles(new DeckObstacles());
+                builder.m_deckObstacles.populate();
+
+                //Joueur Rouge
+                builder.setRedPlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
+                builder.m_RedPlayerDeckCards.populate();
+                builder.m_RedPlayerDeckCards.deal(builder.m_RedPlayerHandCards, 5);
+
+                //Joueur Vert
+                builder.setGreenPlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
+                builder.m_GreenPlayerDeckCards.populate();
+                builder.m_GreenPlayerDeckCards.deal(builder.m_GreenPlayerHandCards, 5);
+
 
                 break;
             case 3:
@@ -260,7 +341,29 @@ public class Board {
                 }
 
                 builder.setMoveMaker(Color.ROUGE);
+
+                //Initialisation des paquets de carte :
+                builder.setDeckObstacles(new DeckObstacles());
+                builder.m_deckObstacles.populate();
+
+                //Joueur Rouge
+                builder.setRedPlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
+                builder.m_RedPlayerDeckCards.populate();
+                builder.m_RedPlayerDeckCards.deal(builder.m_RedPlayerHandCards, 5);
+
+                //Joueur Vert
+                builder.setGreenPlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
+                builder.m_GreenPlayerDeckCards.populate();
+                builder.m_GreenPlayerDeckCards.deal(builder.m_GreenPlayerHandCards, 5);
+
+                //Joueur Violet
+                builder.setPurplePlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
+                builder.m_PurplePlayerDeckCards.populate();
+                builder.m_PurplePlayerDeckCards.deal(builder.m_GreenPlayerHandCards, 5);
+
+
                 break;
+
             case 4:
                 // 4 tortues
                 builder.setTile(new Turtle(true, Color.ROUGE, 0, 0, -90));
@@ -273,6 +376,32 @@ public class Board {
                 builder.setTile(new Jewel(true, Color.BLEU, 7, 6));
 
                 builder.setMoveMaker(Color.ROUGE);
+
+                //Initialisation des paquets de carte :
+                builder.setDeckObstacles(new DeckObstacles());
+                builder.m_deckObstacles.populate();
+
+                //Joueur Rouge
+                builder.setRedPlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
+                builder.m_RedPlayerDeckCards.populate();
+                builder.m_RedPlayerDeckCards.deal(builder.m_RedPlayerHandCards, 5);
+
+                //Joueur Vert
+                builder.setGreenPlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
+                builder.m_GreenPlayerDeckCards.populate();
+                builder.m_GreenPlayerDeckCards.deal(builder.m_GreenPlayerHandCards, 5);
+
+                //Joueur Violet
+                builder.setPurplePlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
+                builder.m_PurplePlayerDeckCards.populate();
+                builder.m_PurplePlayerDeckCards.deal(builder.m_PurplePlayerHandCards, 5);
+
+                //Joueur Bleu
+                builder.setBluePlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
+                builder.m_BluePlayerDeckCards.populate();
+                builder.m_BluePlayerDeckCards.deal(builder.m_BluePlayerHandCards, 5);
+
+
                 break;
 
                 default:
@@ -291,11 +420,43 @@ public class Board {
     }
 
 
+
+
     public static class Builder{
 
         Map<List<Integer>, Tile> boardConfig;
         final int m_nbOfPlayers;
         Color nextMoveMaker;
+
+        //Decks et mains des joueurs
+        DeckObstacles m_deckObstacles;
+
+        //Joueur Rouge
+        DeckCards m_RedPlayerDeckCards = null;
+        Program m_RedPlayerProgram = null;
+        HandCards m_RedPlayerHandCards = null;
+        HandObstacles m_RedPlayerHandObstacles = null;
+
+        //Joueur Vert
+        DeckCards m_GreenPlayerDeckCards = null;
+        Program m_GreenPlayerProgram = null;
+        HandCards m_GreenPlayerHandCards = null;
+        HandObstacles m_GreenPlayerHandObstacles = null;
+
+        //Joueur Violet
+        DeckCards m_PurplePlayerDeckCards = null;
+        Program m_PurplePlayerProgram = null;
+        HandCards m_PurplePlayerHandCards = null;
+        HandObstacles m_PurplePlayerHandObstacles = null;
+
+        //Joueur Bleu
+        DeckCards m_BluePlayerDeckCards = null;
+        Program m_BluePlayerProgram = null;
+        HandCards m_BluePlayerHandCards = null;
+        HandObstacles m_BluePlayerHandObstacles = null;
+
+
+
 
         public Builder(final int nbOfPlayers){
             this.m_nbOfPlayers = nbOfPlayers;
@@ -307,10 +468,48 @@ public class Board {
             return this;
         }
 
+        public Builder setDeckObstacles(final DeckObstacles deckObstacles){
+            this.m_deckObstacles = deckObstacles;
+            return this;
+        }
+
         public Builder setMoveMaker(final Color nextMoveMaker){
             this.nextMoveMaker = nextMoveMaker;
             return this;
         }
+
+        public Builder setRedPlayerHands(DeckCards deckCards, HandCards handCards, Program program, HandObstacles handObstacles){
+            this.m_RedPlayerDeckCards = deckCards;
+            this.m_RedPlayerHandCards = handCards;
+            this.m_RedPlayerProgram = program;
+            this.m_RedPlayerHandObstacles = handObstacles;
+            return this;
+        }
+
+        public Builder setGreenPlayerHands(DeckCards deckCards, HandCards handCards, Program program, HandObstacles handObstacles){
+            this.m_GreenPlayerDeckCards = deckCards;
+            this.m_GreenPlayerHandCards = handCards;
+            this.m_GreenPlayerProgram = program;
+            this.m_GreenPlayerHandObstacles = handObstacles;
+            return this;
+        }
+
+        public Builder setPurplePlayerHands(DeckCards deckCards, HandCards handCards, Program program, HandObstacles handObstacles){
+            this.m_PurplePlayerDeckCards = deckCards;
+            this.m_PurplePlayerHandCards = handCards;
+            this.m_PurplePlayerProgram = program;
+            this.m_PurplePlayerHandObstacles = handObstacles;
+            return this;
+        }
+
+        public Builder setBluePlayerHands(DeckCards deckCards, HandCards handCards, Program program, HandObstacles handObstacles){
+            this.m_BluePlayerDeckCards = deckCards;
+            this.m_BluePlayerHandCards = handCards;
+            this.m_BluePlayerProgram = program;
+            this.m_BluePlayerHandObstacles = handObstacles;
+            return this;
+        }
+
 
         public Board build(){
             return new Board(this);

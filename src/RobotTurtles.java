@@ -8,46 +8,48 @@ public class RobotTurtles {
 
     public static void main(String[] args) {
         Card c1, c2;
-        c1 = new Card(Color.BLEU);
+        c1 = new Card(Color.VIOLET);
+        c2 = new Card(Color.ROUGE);
+
 
     /*
-        //Créer hand :
-        HandCards h1 = new HandCards();
-        Program p = new Program();
+        //créer hand :
+        handcards h1 = new handcards();
+        program p = new program();
         h1.add(c1);
         h1.add(c2);
-        System.out.println(h1.showHand());
-        h1.addInProgram(c1, p);
-        System.out.println("p : " + p.showProgram());
+        system.out.println(h1.showhand());
+        h1.addinprogram(c1, p);
+        system.out.println("p : " + p.showprogram());
 
-        //Créer deck:
-        DeckCards d1 = new DeckCards();
+        //créer deck:
+        deckcards d1 = new deckcards();
         d1.populate();
         d1.shuffle();
-        System.out.println("deck " + d1.showHand());
-        System.out.println("nb de cartes : " + d1.getAmount());
+        system.out.println("deck " + d1.showhand());
+        system.out.println("nb de cartes : " + d1.getamount());
 
         d1.deal(h1, 5);
-        System.out.println("h1 : " + h1.showHand());
-        System.out.println("d1: " + d1.showHand());
+        system.out.println("h1 : " + h1.showhand());
+        system.out.println("d1: " + d1.showhand());
 
 
 
 
-        //Créer main d'obstacles :
-        HandObstacles h2 = new HandObstacles();
+        //créer main d'obstacles :
+        handobstacles h2 = new handobstacles();
 
-        //Créer deck:
-        DeckObstacles d2 = new DeckObstacles();
+        //créer deck:
+        deckobstacles d2 = new deckobstacles();
         d2.populate();
         d2.shuffle();
-        System.out.println("deck " + d2.showHand());
-        System.out.println("nb de cartes : " + d2.getAmount());
+        system.out.println("deck " + d2.showhand());
+        system.out.println("nb de cartes : " + d2.getamount());
 
-        d2.dealSpecific(h2, "Pierre", 2);
-        System.out.println("h2 : " + h2.showHand());
-        System.out.println("d2: " + d2.showHand());
-        System.out.println("nb de cartes : " + d2.getAmount());
+        d2.dealspecific(h2, "pierre", 2);
+        system.out.println("h2 : " + h2.showhand());
+        system.out.println("d2: " + d2.showhand());
+        system.out.println("nb de cartes : " + d2.getamount());
 
 
      */
@@ -60,9 +62,23 @@ public class RobotTurtles {
         System.out.println(board.printBoard());
 
 
+
+
+        DeckCards deck1 = new DeckCards();
+        deck1.add(c1);
+        deck1.add(c2);
+
+        DeckCards discarding = new DeckCards();
+        System.out.println("h2 : " + deck1.showHand());
+        deck1.discard(2);
+        System.out.println("h2 : " + deck1.showHand());
+        deck1.repopulateFromDiscarding();
+
+
+        System.out.println("h2 : " + deck1.showHand());
+
+
  */
-
-
 
 
         Table table = new Table();

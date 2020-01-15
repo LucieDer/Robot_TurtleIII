@@ -26,6 +26,23 @@ public class BoardUtils {
     public static final int TURNED_UP = 90;
     public static final int TURNED_DOWN = -90;
 
+
+    public static int turnaboutOrientation(int orientation){
+        switch(orientation){
+            case BoardUtils.TURNED_UP: //x-1
+                return TURNED_DOWN;
+            case BoardUtils.TURNED_DOWN: //x+1
+                return TURNED_UP;
+            case BoardUtils.TURNED_TO_LEFT: //y-1
+                return TURNED_TO_RIGHT;
+            case BoardUtils.TURNED_TO_RIGHT: //y+1
+                return TURNED_TO_LEFT;
+        }
+        return 0;
+    }
+
+    public static final int[] directions =  {-1, 1};
+
     //Convertir position numéro d'un carré en position X, Y
     public static List<Integer> convertIntoXYPosition(final int iD){
         List<Integer> position = new ArrayList<>();

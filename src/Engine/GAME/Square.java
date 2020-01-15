@@ -14,6 +14,7 @@ Classe case du plateau
 public abstract class Square {
     protected int m_x;
     protected int m_y;
+    protected List<Integer> m_position;
 
 
     private static final Map<List<Integer>, EmptySquare> EMPTY_SQUARE = createAllPossibleEmptySquare();

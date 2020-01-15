@@ -54,8 +54,19 @@ public class IceWall extends Obstacle {
 
 
     @Override
-    public Tile moveTile(Move move) {
-        return null;
+    public void setM_isOnBoard(boolean isOnBoard) {
+        super.setM_isOnBoard(isOnBoard);
+    }
+
+    @Override
+    public IceWall moveTile(Move move) {
+        return new IceWall(true,
+                move.getDestinationCoordinate().get(0),
+                move.getDestinationCoordinate().get(1));
+    }
+
+    public void meltIceWall(){
+        this.setM_isOnBoard(false);
     }
 
     @Override

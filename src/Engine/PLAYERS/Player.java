@@ -84,13 +84,13 @@ public abstract class Player {
     //Faire le mouvement
     public MoveTransition makeMove(final Move move) {
         //Si le mouvement est illegal, renvoie le plateau inchangé
+        /*
         if(!isMoveLegal(move)){
             return new MoveTransition(this.m_board, move, MoveStatus.ILLEGAL_MOVE);
         }
+
+         */
         final Board transitionBoard = move.execute();
-
-
-
         return new MoveTransition(transitionBoard, move, MoveStatus.DONE);
     }
 

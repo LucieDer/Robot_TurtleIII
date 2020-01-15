@@ -2,19 +2,33 @@ package GUI;
 
 import Engine.GAME.Board;
 import Engine.GAME.BoardUtils;
+import Engine.GAME.Move;
+import Engine.GAME.Square;
+import Engine.PLAYERS.MoveTransition;
+import Engine.TILES.Obstacles.Obstacle;
+import Engine.TILES.Tile;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.swing.SwingUtilities.isLeftMouseButton;
+import static javax.swing.SwingUtilities.isRightMouseButton;
+
 public class Table {
+
+    private Square sourceSquare;
+    private Square destinationSquare;
+    private Obstacle movedObstacle;
 
     private final Color lightTileColor = Color.decode("#b0e0e6");
     private final Color darkTileColor = Color.decode("#9ec9cf");
@@ -26,7 +40,7 @@ public class Table {
     private final JFrame gameFrame;
     private final BoardPanel boardPanel;
     private final ActionPanel actionPanel;
-    private final Board RTBoard;
+    private Board RTBoard;
 
     public Table(){
         this.gameFrame = new JFrame("Robot Turtles");
@@ -106,6 +120,16 @@ public class Table {
             setPreferredSize(BOARD_PANEL_DIMENSION);
             validate();
         }
+
+        public void drawBoard(Board rtBoard) {
+            removeAll();
+            for(final SquarePanel squarePanel : boardSquares){
+                squarePanel.drawSquare(rtBoard);
+                add(squarePanel);
+            }
+            validate();
+            repaint();
+        }
     }
 
     //Un carré individuel sur le plateau
@@ -118,9 +142,76 @@ public class Table {
             setPreferredSize(SQUARE_PANEL_DIMENSION);
             assignSquareColor();
             assignSquareTileIcon(RTBoard);
+
+            addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(final MouseEvent e) {
+
+                    //POSER OBSTACLE
+                    if(isRightMouseButton(e)){
+                        destinationSquare = null;
+                        movedObstacle = null;
+
+                    } else if(isLeftMouseButton(e)){
+                        if(movedObstacle != null){
+                            destinationSquare = RTBoard.getSquare(BoardUtils.convertIntoXYPosition(squareId));
+                            //Si on clique sur un carré occupé par une pièce, on annule le clic
+                            if(destinationSquare.isSquareOccupied()){
+                                destinationSquare = null;
+                            } else {
+                                final Move.PutObstacle movePutObstacle = new Move.PutObstacle(RTBoard, movedObstacle, destinationSquare.getTile().getTilePosition());
+                                if(movePutObstacle.canPutHere()){
+                                    final MoveTransition transition = RTBoard.getCurrentPlayer().makeMove(movePutObstacle);
+                                    if(transition.getMoveStatus().isDone()){
+                                        RTBoard = transition.getTransitionBoard();
+                                    }
+                                }
+                                destinationSquare = null;
+                                movedObstacle = null;
+                            }
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    boardPanel.drawBoard(RTBoard);
+                                }
+                            });
+                        }
+
+                    }
+
+                }
+
+                @Override
+                public void mousePressed(final MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseReleased(final MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseEntered(final MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseExited(final MouseEvent e) {
+
+                }
+            });
+
             validate();
         }
 
+
+        public void drawSquare(final Board board){
+            assignSquareColor();
+            assignSquareTileIcon(board);
+            validate();
+            repaint();
+        }
 
 
         private void assignSquareTileIcon(final Board board){
@@ -143,6 +234,8 @@ public class Table {
                         e.printStackTrace();
                     }
                 }
+
+
 
                 else if(board.getSquare(position).getTile().getType() == "Obstacle"){
                     try {

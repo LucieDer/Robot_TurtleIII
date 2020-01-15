@@ -51,8 +51,10 @@ public class StoneWall extends Obstacle {
     //METHODES
 
     @Override
-    public Tile moveTile(Move move) {
-        return null;
+    public StoneWall moveTile(Move move) {
+        return new StoneWall(true,
+                move.getDestinationCoordinate().get(0),
+                move.getDestinationCoordinate().get(1));
     }
 
     @Override

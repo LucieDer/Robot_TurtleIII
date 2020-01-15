@@ -17,6 +17,7 @@ import java.util.*;
 public class Board {
     public final Collection<Tile> activeTurtles;
     public final Collection<Tile> activeTiles;
+    public final Move transitionMove;
     public Turtle redTurtle;
     public Turtle greenTurtle;
     public Turtle purpleTurtle;
@@ -121,12 +122,16 @@ public class Board {
 
         this.deckObstacles = builder.m_deckObstacles;
         this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.m_nbOfPlayers, this.redPlayer, this.greenPlayer, this.purplePlayer, this.bluePlayer);
-
+        this.transitionMove = builder.transitionMove != null ? builder.transitionMove : null;
 
     }
 
     public DeckObstacles getDeckObstacles() {
         return deckObstacles;
+    }
+
+    public Move getTransitionMove() {
+        return transitionMove;
     }
 
     public Player getCurrentPlayer(){
@@ -206,7 +211,7 @@ public class Board {
             if(turtle.getType() == "Tortue"){
                 if(turtle.getM_color() == Color.ROUGE){
                     return turtle;
-                }else return null;
+                }else continue;
             }else return null;
         }return null;
     }
@@ -218,8 +223,8 @@ public class Board {
             if(turtle.getType() == "Tortue"){
                 if(turtle.getM_color() == Color.VERT){
                     return turtle;
-                }else return null;
-            }else return null;
+                }else continue;
+            }else return  null;
         }return null;
     }
 
@@ -229,7 +234,7 @@ public class Board {
             if(turtle.getType() == "Tortue"){
                 if(turtle.getM_color() == Color.VIOLET){
                     return turtle;
-                }else return null;
+                }else continue;
             }else return null;
         }return null;
     }
@@ -240,7 +245,7 @@ public class Board {
             if(turtle.getType() == "Tortue"){
                 if(turtle.getM_color() == Color.BLEU){
                     return turtle;
-                }else return null;
+                }else continue;
             }else return null;
         }return null;
     }
@@ -315,11 +320,13 @@ public class Board {
                 //Joueur Rouge
                 builder.setRedPlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
                 builder.m_RedPlayerDeckCards.populate();
+                builder.m_RedPlayerDeckCards.shuffle();
                 builder.m_RedPlayerDeckCards.deal(builder.m_RedPlayerHandCards, 5);
 
                 //Joueur Vert
                 builder.setGreenPlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
                 builder.m_GreenPlayerDeckCards.populate();
+                builder.m_GreenPlayerDeckCards.shuffle();
                 builder.m_GreenPlayerDeckCards.deal(builder.m_GreenPlayerHandCards, 5);
 
 
@@ -349,16 +356,19 @@ public class Board {
                 //Joueur Rouge
                 builder.setRedPlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
                 builder.m_RedPlayerDeckCards.populate();
+                builder.m_RedPlayerDeckCards.shuffle();
                 builder.m_RedPlayerDeckCards.deal(builder.m_RedPlayerHandCards, 5);
 
                 //Joueur Vert
                 builder.setGreenPlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
                 builder.m_GreenPlayerDeckCards.populate();
+                builder.m_GreenPlayerDeckCards.shuffle();
                 builder.m_GreenPlayerDeckCards.deal(builder.m_GreenPlayerHandCards, 5);
 
                 //Joueur Violet
                 builder.setPurplePlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
                 builder.m_PurplePlayerDeckCards.populate();
+                builder.m_GreenPlayerDeckCards.shuffle();
                 builder.m_PurplePlayerDeckCards.deal(builder.m_GreenPlayerHandCards, 5);
 
 
@@ -384,21 +394,25 @@ public class Board {
                 //Joueur Rouge
                 builder.setRedPlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
                 builder.m_RedPlayerDeckCards.populate();
+                builder.m_RedPlayerDeckCards.shuffle();
                 builder.m_RedPlayerDeckCards.deal(builder.m_RedPlayerHandCards, 5);
 
                 //Joueur Vert
                 builder.setGreenPlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
                 builder.m_GreenPlayerDeckCards.populate();
+                builder.m_GreenPlayerDeckCards.shuffle();
                 builder.m_GreenPlayerDeckCards.deal(builder.m_GreenPlayerHandCards, 5);
 
                 //Joueur Violet
                 builder.setPurplePlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
                 builder.m_PurplePlayerDeckCards.populate();
+                builder.m_PurplePlayerDeckCards.shuffle();
                 builder.m_PurplePlayerDeckCards.deal(builder.m_PurplePlayerHandCards, 5);
 
                 //Joueur Bleu
                 builder.setBluePlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
                 builder.m_BluePlayerDeckCards.populate();
+                builder.m_BluePlayerDeckCards.shuffle();
                 builder.m_BluePlayerDeckCards.deal(builder.m_BluePlayerHandCards, 5);
 
 
@@ -427,6 +441,7 @@ public class Board {
         Map<List<Integer>, Tile> boardConfig;
         final int m_nbOfPlayers;
         Color nextMoveMaker;
+        Move transitionMove = null;
 
         //Decks et mains des joueurs
         DeckObstacles m_deckObstacles;
@@ -507,6 +522,11 @@ public class Board {
             this.m_BluePlayerHandCards = handCards;
             this.m_BluePlayerProgram = program;
             this.m_BluePlayerHandObstacles = handObstacles;
+            return this;
+        }
+
+        public Builder setMoveTransition(final Move transitionMove){
+            this.transitionMove = transitionMove;
             return this;
         }
 

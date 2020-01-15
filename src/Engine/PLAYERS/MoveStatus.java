@@ -12,6 +12,12 @@ public enum MoveStatus {
         public boolean isDone() {
             return false;
         }
+    },
+    IS_IN_PROGRESS{
+        @Override
+        public boolean isDone() {
+            return false;
+        }
     };
 
 

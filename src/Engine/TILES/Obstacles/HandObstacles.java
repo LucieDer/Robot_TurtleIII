@@ -53,9 +53,48 @@ public class HandObstacles {
         return str;
     }
 
-    // Fonction pour ajouter sur plateau ?
+    public int getStoneAmount() {
+        int nbOfStoneWall = 0;
+        for(Obstacle obstacle : this.obstacles){
+            if (obstacle.getM_material() == "Pierre"){
+                nbOfStoneWall++;
+            }
+        }
+        return nbOfStoneWall;
+    }
+
+    public int getIceAmount() {
+        int nbOfIceWall = 0;
+        for(Obstacle obstacle : this.obstacles){
+            if (obstacle.getM_material() == "Glace"){
+                nbOfIceWall++;
+            }
+        }
+        return nbOfIceWall;
+    }
 
 
 
+    public Obstacle getStoneWall() {
+        int index;
+        for(Obstacle obstacle : this.obstacles){
+            if (obstacle.getM_material() == "Pierre"){
+                index = obstacles.indexOf(obstacle);
+                return this.obstacles.remove(index);
+            }
+        }
+        return null;
+    }
+
+    public Obstacle getIceWall() {
+        int index;
+        for(Obstacle obstacle : this.obstacles){
+            if (obstacle.getM_material() == "Glace"){
+                index = obstacles.indexOf(obstacle);
+                return this.obstacles.remove(index);
+            }
+        }
+        return null;
+    }
 
 }

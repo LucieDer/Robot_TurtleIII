@@ -1,14 +1,20 @@
 package Engine.CARDS;
 
+import Engine.GAME.Board;
+import Engine.GAME.Move;
+import Engine.PLAYERS.MoveStatus;
+import Engine.PLAYERS.MoveTransition;
 import Engine.PLAYERS.Player;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /*
 Classe pour la pile du programme
  */
 
-public class Program {
+public class Program extends HandCards {
     private Player m_player;
     private ArrayList<Card> cards;
     //constructeur
@@ -25,6 +31,7 @@ public class Program {
     public void clear(){
         cards.clear();
     }
+
 
     // Afficher le programme dans le terminal
     public String showProgram(){
@@ -44,7 +51,7 @@ public class Program {
     }
 
 
-/*
+
     //Va créer la liste de mouvements à partir des cartes présentes dans le programme
     public Collection<Move> calculateMoves(){
         final List<Move> moves = new ArrayList<>();
@@ -56,11 +63,11 @@ public class Program {
             }
             else if (c.getColor() == "Vert"){
                 //TODO ICI
-                moves.add(new Move.TurtleTurnLeft(this.m_player.getM_Board(), this.m_player.getM_turtle(), this.m_player.getM_turtle().getM_orientation()));
+                moves.add(new Move.TurtleTurnLeft(this.m_player.getM_Board(), this.m_player.getM_turtle()));
             }
             else if (c.getColor() == "Violet"){
                 //TODO ICI
-                moves.add(new Move.TurtleTurnRight(this.m_player.getM_Board(), this.m_player.getM_turtle(), this.m_player.getM_turtle().getM_orientation() ));
+                moves.add(new Move.TurtleTurnRight(this.m_player.getM_Board(), this.m_player.getM_turtle()));
             }
             else if (c.getColor() == "Bleu"){
                 //TODO ICI
@@ -69,10 +76,21 @@ public class Program {
         }
 
         return moves;
-    }*/
+    }
+
+
+
+
     // Exécuter le programme A COMPLETER
     public void executeProgram(){
+        for(Move move: this.calculateMoves()){
+            this.m_player.makeMove(move);
+        }
 
+        this.m_player.getM_deckCards().addToDiscard(this);
     }
+
+
+
 
 }

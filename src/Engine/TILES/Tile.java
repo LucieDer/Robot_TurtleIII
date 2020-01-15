@@ -66,9 +66,7 @@ public abstract class Tile {
     //METHODES
 
 
-    public List<Integer> getM_currentPosition() {
-        return m_currentPosition;
-    }
+
 
     public int getM_currentOrientation() {
         return m_currentOrientation;
@@ -134,7 +132,7 @@ public abstract class Tile {
             return false;
         }
         final Tile otherTile = (Tile) other;
-        return m_currentPosition == otherTile.getM_currentPosition() && m_type.getTypeValue().equals(otherTile.getM_type()) &&
+        return m_currentPosition == otherTile.getTilePosition() && m_type.getTypeValue().equals(otherTile.getM_type()) &&
                 m_isOnBoard == otherTile.isM_isOnBoard() && m_canMove == otherTile.isM_canMove() && m_x == otherTile.getM_x() && m_y == otherTile.getM_y();
     }
 

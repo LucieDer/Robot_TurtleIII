@@ -59,12 +59,12 @@ public abstract class Square {
     //Pour avoir la valeur du carré (vide ou non)
     public abstract String getSquareValue();
 
-
-
-
-
-
-
+    public List<Integer> getPosition(){
+        List<Integer> position = new ArrayList<>();
+        position.add(m_x);
+        position.add(m_y);
+        return position;
+    };
 
 
     //Classe fille pour emplacement vide

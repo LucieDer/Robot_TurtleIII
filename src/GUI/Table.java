@@ -1,15 +1,16 @@
 package GUI;
 
+import Engine.CARDS.HandCards;
 import Engine.GAME.Board;
 import Engine.GAME.BoardUtils;
 import Engine.GAME.Move;
 import Engine.GAME.Square;
 import Engine.PLAYERS.MoveTransition;
 import Engine.TILES.Obstacles.Obstacle;
-import Engine.TILES.Tile;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,18 +29,25 @@ public class Table {
 
     private Square sourceSquare;
     private Square destinationSquare;
+
     private Obstacle movedObstacle;
 
+    private int nbOfPlayer = 2;
     private final Color lightTileColor = Color.decode("#b0e0e6");
     private final Color darkTileColor = Color.decode("#9ec9cf");
-    private static final Dimension OUTER_FRAME_DIMENSION = new Dimension(800,600);
-    private static final Dimension BOARD_PANEL_DIMENSION = new Dimension(400,400) ;
+    private static final Dimension OUTER_FRAME_DIMENSION = new Dimension(950,800);
+    private static final Dimension BOARD_PANEL_DIMENSION = new Dimension(300,300) ;
     private static final Dimension SQUARE_PANEL_DIMENSION = new Dimension(10,10) ;
+    private static final Dimension CARDS_PANEL_DIMENSION = new Dimension(30,100) ;
+    private static final Dimension SINGLE_CARD_PANEL_DIMENSION = new Dimension(400, 600);
     private static String defaultPieceImagesPath = "ArtTiles/";
 
     private final JFrame gameFrame;
     private final BoardPanel boardPanel;
-    //private final ActionPanel actionPanel;
+    private final AllHands allHandsPanel;
+    private final OrientationPanel orientationPanel;
+    private final ActionPanel actionPanel;
+
     private Board RTBoard;
 
     public Table(){
@@ -52,23 +60,69 @@ public class Table {
         this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
 
         //Crée un plateau
-        this.RTBoard = Board.createStandardBoard(3);
+        this.RTBoard = Board.createStandardBoard(this.nbOfPlayer);
+        this.boardPanel = new BoardPanel();
+        //this.boardPanel.setBounds(10, 10, 300, 300);
+        //Crée partie avec les cartes
+        this.allHandsPanel = new AllHands(this);
+        //Créer partie avec orientation :
+        this.orientationPanel = new OrientationPanel();
+        //Créer partie avec Actions
+        this.actionPanel = new ActionPanel(this);
+
+        //this.actionPanel.setBounds(500, 1, 10, 10);
+
+
+        this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
+        this.gameFrame.add(this.allHandsPanel, BorderLayout.SOUTH);
+        this.gameFrame.add(this.orientationPanel, BorderLayout.WEST);
+        this.gameFrame.add(this.actionPanel, BorderLayout.EAST);
+
+        gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.gameFrame.setVisible(true);
+    }
+
+
+    /*
+//Constructeur pour changer le nb de joueurs
+    public Table(final int nbOfPlayer){
+        this.gameFrame = new JFrame("Robot Turtles");
+        this.gameFrame.setLayout(new BorderLayout());
+
+        this.nbOfPlayer = nbOfPlayer;
+
+        //Créer la bande à dérouler en haut
+        final JMenuBar tableMenuBar = createMenuBar();
+        this.gameFrame.setJMenuBar(tableMenuBar);
+        this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
+
+        //Crée un plateau
+        this.RTBoard = Board.createStandardBoard(this.nbOfPlayer);
         this.boardPanel = new BoardPanel();
         //this.boardPanel.setBounds(10, 10, 300, 300);
 
 
         //Crée partie avec les cartes
-        //this.actionPanel = new ActionPanel();
+        this.allHandsPanel = new AllHands(this);
+        this.orientationPanel = new OrientationPanel();
+
         //this.actionPanel.setBounds(500, 1, 10, 10);
 
 
-
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
-        //this.gameFrame.add(this.actionPanel, BorderLayout.EAST);
+        this.gameFrame.add(this.allHandsPanel, BorderLayout.SOUTH);
+        this.gameFrame.add(this.orientationPanel, BorderLayout.WEST);
         //this.gameFrame.add(debugPanel, BorderLayout.SOUTH);
 
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.gameFrame.setVisible(true);
+    }
+
+     */
+
+
+    public Board getRTBoard() {
+        return RTBoard;
     }
 
     private JMenuBar createMenuBar() {
@@ -78,16 +132,17 @@ public class Table {
     }
 
     private JMenu createFileMenu() {
-        final JMenu fileMenu = new JMenu("File");
+        final JMenu optionMenu = new JMenu("Options");
 
-        final JMenuItem openPGN = new JMenuItem("Load PGN File");
-        openPGN.addActionListener(new ActionListener() {
+        final JCheckBoxMenuItem nbOfPlayersCheckBox = new JCheckBoxMenuItem("Nombre de joueurs");
+        nbOfPlayersCheckBox.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                System.out.println("open up that pgn file!");
+            public void actionPerformed(ActionEvent e) {
+
             }
         });
-        fileMenu.add(openPGN);
+        optionMenu.add(nbOfPlayersCheckBox);
+
 
         //Créer option pour quitter
         final JMenuItem exitMenuItem = new JMenuItem("Exit");
@@ -98,11 +153,19 @@ public class Table {
                 System.exit(0);
             }
         });
-        fileMenu.add(exitMenuItem);
+        optionMenu.add(exitMenuItem);
 
-        return fileMenu;
+        return optionMenu;
     }
 
+    public void setMovedObstacle(Obstacle movedObstacle) {
+        this.movedObstacle = movedObstacle;
+    }
+
+
+    public Obstacle getMovedObstacle() {
+        return movedObstacle;
+    }
 
     //Le Plateau
     private class BoardPanel extends JPanel{
@@ -132,6 +195,65 @@ public class Table {
         }
     }
 
+    private class OrientationPanel extends JPanel {
+        private final int currentOrientation;
+        private final int nbInDeck;
+        private final int nbInDiscarding;
+        private final JLabel label;
+        private final JLabel deck;
+        private final JLabel discarding;
+        private final EtchedBorder PANEL_BORDER = new EtchedBorder(EtchedBorder.RAISED);
+
+        OrientationPanel(){
+            super(new BorderLayout());
+            setBackground(Color.decode("#05ffa1"));
+            setBorder(PANEL_BORDER);
+            this.currentOrientation = RTBoard.getCurrentPlayer().getM_turtle().getM_orientation();
+            this.nbInDeck = RTBoard.getCurrentPlayer().getM_deckCards().getAmount();
+            this.nbInDiscarding = RTBoard.getCurrentPlayer().getM_deckCards().m_discarding.getAmount();
+
+            this.label = new JLabel("Orientation :\n" + orientationToString());
+            this.label.setFont(new Font("Verdana",1,10));
+            add(this.label, BorderLayout.NORTH);
+
+            this.deck = new JLabel("Deck :\n" + this.nbInDeck);
+            this.deck.setFont(new Font("Verdana",1,10));
+            add(this.deck, BorderLayout.CENTER);
+
+            this.discarding = new JLabel("Défausse :\n" + this.nbInDiscarding);
+            this.discarding.setFont(new Font("Verdana",1,10));
+            add(this.discarding, BorderLayout.SOUTH);
+
+
+
+            validate();
+        }
+
+        public int getCurrentOrientation() {
+            return currentOrientation;
+        }
+
+        public String orientationToString(){
+            switch(this.currentOrientation){
+                case(BoardUtils.TURNED_TO_LEFT):
+                    return "Gauche";
+                case(BoardUtils.TURNED_TO_RIGHT):
+                    return "Droite";
+                case(BoardUtils.TURNED_UP):
+                    return "Haut";
+                case(BoardUtils.TURNED_DOWN):
+                    return "Bas";
+            }
+            return null;
+        }
+
+
+    }
+
+
+
+
+
     //Un carré individuel sur le plateau
     private class SquarePanel extends JPanel{
 
@@ -159,10 +281,12 @@ public class Table {
                             if(destinationSquare.isSquareOccupied()){
                                 destinationSquare = null;
                             } else {
-                                final Move.PutObstacle movePutObstacle = new Move.PutObstacle(RTBoard, movedObstacle, destinationSquare.getTile().getTilePosition());
-                                if(movePutObstacle.canPutHere()){
+
+                                final Move.PutObstacle movePutObstacle = new Move.PutObstacle(RTBoard, movedObstacle, destinationSquare.getPosition());
+                                if(movePutObstacle.isMovelegal()){
                                     final MoveTransition transition = RTBoard.getCurrentPlayer().makeMove(movePutObstacle);
                                     if(transition.getMoveStatus().isDone()){
+
                                         RTBoard = transition.getTransitionBoard();
                                     }
                                 }
@@ -215,7 +339,7 @@ public class Table {
 
 
         private void assignSquareTileIcon(final Board board){
-            this.removeAll();;
+            this.removeAll();
             List<Integer> position = BoardUtils.convertIntoXYPosition(this.squareId);
             if(board.getSquare(position).isSquareOccupied()){
 
@@ -282,4 +406,14 @@ public class Table {
 
 
 
-}
+
+    }
+
+
+
+
+
+
+
+
+

@@ -81,15 +81,22 @@ public abstract class Player {
     }
 
 
+
+
     //Faire le mouvement
     public MoveTransition makeMove(final Move move) {
-        //Si le mouvement est illegal, renvoie le plateau inchangé
-        /*
-        if(!isMoveLegal(move)){
+        //Vérifie si on pose un mur qu'on peut bien le poser
+        if(move.isPutting() && !move.isMovelegal()){
+
             return new MoveTransition(this.m_board, move, MoveStatus.ILLEGAL_MOVE);
         }
 
-         */
+        //Vérifie si c'est un programme en cours d'execution
+        else if(move.isMoving() && move.getM_board().getCurrentPlayer().getM_program().getAmount() !=0){
+            final Board transitionBoard = move.executeProgram();
+            return new MoveTransition(transitionBoard, move, MoveStatus.IS_IN_PROGRESS);
+        }
+
         final Board transitionBoard = move.execute();
         return new MoveTransition(transitionBoard, move, MoveStatus.DONE);
     }

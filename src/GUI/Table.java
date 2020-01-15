@@ -39,7 +39,7 @@ public class Table {
 
     private final JFrame gameFrame;
     private final BoardPanel boardPanel;
-    private final ActionPanel actionPanel;
+    //private final ActionPanel actionPanel;
     private Board RTBoard;
 
     public Table(){
@@ -58,13 +58,13 @@ public class Table {
 
 
         //Crée partie avec les cartes
-        this.actionPanel = new ActionPanel();
+        //this.actionPanel = new ActionPanel();
         //this.actionPanel.setBounds(500, 1, 10, 10);
 
 
 
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
-        this.gameFrame.add(this.actionPanel, BorderLayout.EAST);
+        //this.gameFrame.add(this.actionPanel, BorderLayout.EAST);
         //this.gameFrame.add(debugPanel, BorderLayout.SOUTH);
 
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

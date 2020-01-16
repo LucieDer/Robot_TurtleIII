@@ -23,7 +23,7 @@ public abstract class Move {
     protected boolean isPutting = false;
     protected boolean isTurning = false;
     protected boolean isLaser = false;
-    protected boolean movelegal = true;
+    protected boolean moveIllegal = true;
 
     //protected static final Move NULL_MOVE = new NullMove();
 
@@ -56,8 +56,8 @@ public abstract class Move {
         return isLaser;
     }
 
-    public boolean isMovelegal() {
-        return movelegal;
+    public boolean isMoveIllegal() {
+        return moveIllegal;
     }
 
     public boolean isMoving() {
@@ -85,7 +85,7 @@ public abstract class Move {
     }
 
     public List<Integer> getDestinationCoordinate(){
-        return this.getDestinationCoordinate();
+        return this.destinationCoordinate;
     }
 
     public int getDestinationOrientation() {
@@ -124,6 +124,13 @@ public abstract class Move {
         builder.setTile(this.m_movedTile.moveTile(this));
         //Passer au joueur suivant
         builder.setMoveMaker(this.m_board.getCurrentPlayer().getNextPlayer().getColor());
+
+        builder.setRedPlayerHands(this.m_board.m_RedPlayerDeckCards, this.m_board.m_RedPlayerHandCards, this.m_board.m_RedPlayerProgram, this.m_board.m_RedPlayerHandObstacles);
+        builder.setGreenPlayerHands(this.m_board.m_GreenPlayerDeckCards, this.m_board.m_GreenPlayerHandCards, this.m_board.m_GreenPlayerProgram, this.m_board.m_GreenPlayerHandObstacles);
+        builder.setPurplePlayerHands(this.m_board.m_PurplePlayerDeckCards, this.m_board.m_PurplePlayerHandCards, this.m_board.m_PurplePlayerProgram, this.m_board.m_PurplePlayerHandObstacles);
+        builder.setBluePlayerHands(this.m_board.m_BluePlayerDeckCards, this.m_board.m_BluePlayerHandCards, this.m_board.m_BluePlayerProgram, this.m_board.m_BluePlayerHandObstacles);
+
+
 
 
         return builder.build();
@@ -355,6 +362,7 @@ public abstract class Move {
             super(board, tile);
             this.isPutting = true;
             this.destinationCoordinate = destinationCoordinate;
+            this.moveIllegal = ((this.isNextToForbiddenPiece()) && (tile.getM_material() == "Pierre"));
         }
 
         public List<Square> getAdjacentSquares(){
@@ -366,22 +374,25 @@ public abstract class Move {
             List<Square> adjacentSquares = new ArrayList<>();
 
             for(int i=0; i<4; i++){
-                try{
-                    position.add(x + xdirections[i]);
-                    position.add(y + ydirections[i]);
+                position.clear();
+                position.add(x + xdirections[i]);
+                position.add(y + ydirections[i]);
+                if(BoardUtils.isValidCoordinate(position.get(0), position.get(1))){
                     adjacentSquares.add(this.m_board.getSquare(position));
-                }catch (IndexOutOfBoundsException e){
-                    continue;
                 }
+
             }
+
             return adjacentSquares;
         }
 
-        public boolean isNextToJewel(){
+        public boolean isNextToForbiddenPiece(){
             List<Square> adjacentSquare = this.getAdjacentSquares();
             for(Square square : adjacentSquare){
-                if(square.getTile().getType() == "Joyau"){
-                    return true;
+                if(square.isSquareOccupied()){
+                    if( (square.getTile().getType() == "Joyau") || (square.getTile().getType() == "Tortue") ){
+                        return true;
+                    }
                 }
             }
             return false;
@@ -389,13 +400,13 @@ public abstract class Move {
 
         public void canPutHere(){
             if(this.m_movedTile.getM_material() == "Pierre"){
-                if(this.isNextToJewel()){
-                    this.movelegal = true;
+                if(this.isNextToForbiddenPiece()){
+                    this.moveIllegal = true;
                 }
             }else if(this.m_movedTile.getM_material() == "Glace"){
-                this.movelegal = false;
+                this.moveIllegal = false;
             }
-            this.movelegal = true;
+            this.moveIllegal = true;
         }
 
 

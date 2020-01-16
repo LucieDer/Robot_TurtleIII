@@ -1,5 +1,6 @@
 package Engine.GAME;
 
+import Engine.CARDS.Card;
 import Engine.CARDS.DeckCards;
 import Engine.CARDS.HandCards;
 import Engine.CARDS.Program;
@@ -8,6 +9,7 @@ import Engine.PLAYERS.*;
 import Engine.TILES.Jewel;
 import Engine.TILES.Obstacles.DeckObstacles;
 import Engine.TILES.Obstacles.HandObstacles;
+import Engine.TILES.Obstacles.Obstacle;
 import Engine.TILES.Obstacles.StoneWall;
 import Engine.TILES.Tile;
 import Engine.TILES.Turtle;
@@ -17,6 +19,10 @@ import java.util.*;
 public class Board {
     public final Collection<Tile> activeTurtles;
     public final Collection<Tile> activeTiles;
+    private Obstacle movedObstacle = null;
+    private Card addedCard = null;
+    private boolean isAddingCard = false;
+
     public final Move transitionMove;
     public Turtle redTurtle;
     public Turtle greenTurtle;
@@ -124,6 +130,30 @@ public class Board {
         this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.m_nbOfPlayers, this.redPlayer, this.greenPlayer, this.purplePlayer, this.bluePlayer);
         this.transitionMove = builder.transitionMove != null ? builder.transitionMove : null;
 
+    }
+
+    public Obstacle getMovedObstacle() {
+        return movedObstacle;
+    }
+
+    public void setMovedObstacle(Obstacle movedObstacle) {
+        this.movedObstacle = movedObstacle;
+    }
+
+    public Card getAddedCard() {
+        return addedCard;
+    }
+
+    public void setAddedCard(Card addedCard) {
+        this.addedCard = addedCard;
+    }
+
+    public boolean isAddingCard() {
+        return isAddingCard;
+    }
+
+    public void setAddingCard(boolean addingCard) {
+        isAddingCard = addingCard;
     }
 
     public DeckObstacles getDeckObstacles() {
@@ -476,6 +506,7 @@ public class Board {
         public Builder(final int nbOfPlayers){
             this.m_nbOfPlayers = nbOfPlayers;
             this.boardConfig = new HashMap<>();
+
         }
 
         public Builder setTile(final Tile tile){

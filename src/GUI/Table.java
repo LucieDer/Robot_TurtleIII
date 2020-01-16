@@ -1,12 +1,10 @@
 package GUI;
 
-import Engine.CARDS.HandCards;
 import Engine.GAME.Board;
 import Engine.GAME.BoardUtils;
 import Engine.GAME.Move;
 import Engine.GAME.Square;
 import Engine.PLAYERS.MoveTransition;
-import Engine.TILES.Obstacles.Obstacle;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -30,7 +28,6 @@ public class Table {
     private Square sourceSquare;
     private Square destinationSquare;
 
-    private Obstacle movedObstacle;
 
     private int nbOfPlayer = 2;
     private final Color lightTileColor = Color.decode("#b0e0e6");
@@ -158,14 +155,6 @@ public class Table {
         return optionMenu;
     }
 
-    public void setMovedObstacle(Obstacle movedObstacle) {
-        this.movedObstacle = movedObstacle;
-    }
-
-
-    public Obstacle getMovedObstacle() {
-        return movedObstacle;
-    }
 
     //Le Plateau
     private class BoardPanel extends JPanel{
@@ -270,20 +259,21 @@ public class Table {
                 public void mouseClicked(final MouseEvent e) {
 
                     //POSER OBSTACLE
+                    //Clic droit pour annuler
                     if(isRightMouseButton(e)){
                         destinationSquare = null;
-                        movedObstacle = null;
+                        RTBoard.setMovedObstacle(null);
 
                     } else if(isLeftMouseButton(e)){
-                        if(movedObstacle != null){
+                        if(RTBoard.getMovedObstacle() != null){
                             destinationSquare = RTBoard.getSquare(BoardUtils.convertIntoXYPosition(squareId));
                             //Si on clique sur un carré occupé par une pièce, on annule le clic
                             if(destinationSquare.isSquareOccupied()){
                                 destinationSquare = null;
                             } else {
 
-                                final Move.PutObstacle movePutObstacle = new Move.PutObstacle(RTBoard, movedObstacle, destinationSquare.getPosition());
-                                if(movePutObstacle.isMovelegal()){
+                                final Move.PutObstacle movePutObstacle = new Move.PutObstacle(RTBoard, RTBoard.getMovedObstacle(), destinationSquare.getPosition());
+                                if(!movePutObstacle.isMoveIllegal()){
                                     final MoveTransition transition = RTBoard.getCurrentPlayer().makeMove(movePutObstacle);
                                     if(transition.getMoveStatus().isDone()){
 
@@ -291,11 +281,12 @@ public class Table {
                                     }
                                 }
                                 destinationSquare = null;
-                                movedObstacle = null;
+                                RTBoard.setMovedObstacle(null);
                             }
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
+                                    actionPanel.redo(RTBoard);
                                     boardPanel.drawBoard(RTBoard);
                                 }
                             });

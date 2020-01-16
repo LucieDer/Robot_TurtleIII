@@ -6,7 +6,6 @@ import Engine.CARDS.Program;
 import Engine.GAME.Board;
 import Engine.GAME.Color;
 import Engine.GAME.Move;
-import Engine.TILES.Obstacles.DeckObstacles;
 import Engine.TILES.Obstacles.HandObstacles;
 import Engine.TILES.Turtle;
 
@@ -86,7 +85,7 @@ public abstract class Player {
     //Faire le mouvement
     public MoveTransition makeMove(final Move move) {
         //Vérifie si on pose un mur qu'on peut bien le poser
-        if(move.isPutting() && !move.isMovelegal()){
+        if(move.isPutting() && move.isMoveIllegal()){
 
             return new MoveTransition(this.m_board, move, MoveStatus.ILLEGAL_MOVE);
         }

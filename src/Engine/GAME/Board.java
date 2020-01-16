@@ -19,9 +19,12 @@ import java.util.*;
 public class Board {
     public final Collection<Tile> activeTurtles;
     public final Collection<Tile> activeTiles;
+
+    //Variable pour savoir si tour est fini ou pas
     private Obstacle movedObstacle = null;
     private Card addedCard = null;
     private boolean isAddingCard = false;
+    private boolean isFinished = false;
 
     public final Move transitionMove;
     public Turtle redTurtle;
@@ -154,6 +157,14 @@ public class Board {
 
     public void setAddingCard(boolean addingCard) {
         isAddingCard = addingCard;
+    }
+
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    public void setFinished(boolean finished) {
+        isFinished = finished;
     }
 
     public DeckObstacles getDeckObstacles() {

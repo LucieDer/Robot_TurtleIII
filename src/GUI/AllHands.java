@@ -5,6 +5,7 @@ import Engine.CARDS.HandCards;
 import Engine.GAME.Board;
 import Engine.GAME.BoardUtils;
 import Engine.GAME.Move;
+
 import Engine.PLAYERS.MoveTransition;
 
 import javax.imageio.ImageIO;
@@ -153,9 +154,6 @@ public class AllHands extends JPanel{
 
         public void redo(Board board){
             removeAll();
-            for(Card card : board.getCurrentPlayer().getM_program().getCards()){
-                this.handCards.add(board.getCurrentPlayer().getM_program().getCard(card));
-            }
 
             this.handCards = board.getCurrentPlayer().getM_program().getCards();
             this.cardList = new JLabel("Programme :\n" );
@@ -190,25 +188,40 @@ public class AllHands extends JPanel{
             addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    //POSER OBSTACLE
+                    //AJOUTER AU PROGRAMME
                     //Clic droit pour annuler
                     if(isRightMouseButton(e)){
                         table.getRTBoard().setAddedCard(null);
 
                     }else if(isLeftMouseButton(e)){
+                        //Si le joueur veut ajouter une carte au programme
                         if(table.getRTBoard().isAddingCard() && table.getRTBoard().getAddedCard() == null) {
                             //On ajoute la carte sur le carré au programme
                             table.getRTBoard().setAddedCard(table.getRTBoard().getCurrentPlayer().getM_handCards().getCards().remove(cardId));
                             table.getRTBoard().getCurrentPlayer().getM_program().add(table.getRTBoard().getAddedCard());
-                            //Si on clique sur un carré occupé par une pièce, on annule le clic
+
                             table.getRTBoard().setAddingCard(false);
                             table.getRTBoard().setAddedCard(null);
+
+                        }
+                        //Si le joueur veut finir le tour
+                        else if(table.getRTBoard().isFinished() && table.getRTBoard().getAddedCard() == null){
+                            //On ajoute la carte sur le carré à la défausse
+                            table.getRTBoard().setAddedCard(table.getRTBoard().getCurrentPlayer().getM_handCards().getCards().remove(cardId));
+                            table.getRTBoard().getCurrentPlayer().getM_deckCards().addToDiscard(table.getRTBoard().getAddedCard());
+
+                            //table.getRTBoard().setFinished(false);
+                            table.getRTBoard().setAddedCard(null);
+
+
 
                         }
 
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
+
+
                                     //redo actionpanel
                                     table.getActionPanel().redo(table.getRTBoard());
                                     //redo card panel

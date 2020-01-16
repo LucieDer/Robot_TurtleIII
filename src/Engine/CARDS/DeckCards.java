@@ -113,9 +113,13 @@ public class DeckCards extends HandCards {
     }
 
 
-    public void addToDiscard(Program program) {
+    public void clearProgram(Program program) {
         for(int i=0; i<program.getAmount(); i++){
             this.m_discarding.add(program.getCards().remove(0));
         }
+    }
+
+    public void addToDiscard(Card card) {
+        this.m_discarding.add(card);
     }
 }

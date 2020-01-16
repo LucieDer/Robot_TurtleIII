@@ -170,9 +170,13 @@ public class Table {
         return optionMenu;
     }
 
+    public void setRTBoard(Board transitionBoard) {
+        this.RTBoard = transitionBoard;
+    }
+
 
     //Le Plateau
-    private class BoardPanel extends JPanel{
+    public class BoardPanel extends JPanel{
         final List<SquarePanel> boardSquares;
 
         BoardPanel(){
@@ -313,7 +317,6 @@ public class Table {
                                 if(!movePutObstacle.isMoveIllegal()){
                                     final MoveTransition transition = RTBoard.getCurrentPlayer().makeMove(movePutObstacle);
                                     if(transition.getMoveStatus().isDone()){
-
                                         RTBoard = transition.getTransitionBoard();
                                     }
                                 }
@@ -326,6 +329,7 @@ public class Table {
                                     actionPanel.redo(RTBoard);
                                     allHandsPanel.getProgramPanel().redo(RTBoard);
                                     allHandsPanel.getHandCardPanel().redo(RTBoard);
+                                    orientationPanel.reDraw(RTBoard);
                                     boardPanel.drawBoard(RTBoard);
                                 }
                             });

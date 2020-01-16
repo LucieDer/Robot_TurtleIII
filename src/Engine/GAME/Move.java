@@ -37,12 +37,16 @@ public abstract class Move {
 
     //Constructeur complet
     public Move(final Board board, final Tile tile){
+        if(tile!=null){
+            this.finalCoordinate = tile.getTilePosition(); //Par défaut la pièce ne bouge pas
+            this.finalOrientation = tile.getM_currentOrientation();
+            this.destinationCoordinate = tile.getTilePosition(); //Par défaut la pièce ne bouge pas
+            this.destinationOrientation = tile.getM_currentOrientation();
+        }
+
         this.m_board = board;
         this.m_movedTile = tile;
-        this.finalCoordinate = tile.getTilePosition(); //Par défaut la pièce ne bouge pas
-        this.finalOrientation = tile.getM_currentOrientation();
-        this.destinationCoordinate = tile.getTilePosition(); //Par défaut la pièce ne bouge pas
-        this.destinationOrientation = tile.getM_currentOrientation();
+
     }
 
     /*
@@ -113,25 +117,30 @@ public abstract class Move {
 
     public Board execute() {
         final Board.Builder builder = new Board.Builder(this.m_board.getM_nbOfPlayers());
-        for(final Tile tile : this.m_board.getActiveTiles()){
-            //Vérifier que la pièce est sur le plateau : refait le plateau précédent avec toutes les pièces non bougees
-            if(!this.m_movedTile.equals(tile) && tile.isM_isOnBoard()){
-                builder.setTile(tile);
+
+
+        if(this.m_movedTile != null){
+
+            for(final Tile tile : this.m_board.getActiveTiles()){
+                //Vérifier que la pièce est sur le plateau : refait le plateau précédent avec toutes les pièces non bougees
+                if(!this.m_movedTile.equals(tile) && tile.isM_isOnBoard()){
+                    builder.setTile(tile);
+                }
             }
-        }
+            //Représenter la pièce déplacée : crée une nouvelle pièce sur plateau avec de nouveaux paramètres
+            builder.setTile(this.m_movedTile.moveTile(this));
+            //Passer au joueur suivant
+            builder.setMoveMaker(this.m_board.getCurrentPlayer().getNextPlayer().getColor());
 
-        //Représenter la pièce déplacée : crée une nouvelle pièce sur plateau avec de nouveaux paramètres
-        builder.setTile(this.m_movedTile.moveTile(this));
-        //Passer au joueur suivant
-        builder.setMoveMaker(this.m_board.getCurrentPlayer().getNextPlayer().getColor());
-
-        builder.setRedPlayerHands(this.m_board.m_RedPlayerDeckCards, this.m_board.m_RedPlayerHandCards, this.m_board.m_RedPlayerProgram, this.m_board.m_RedPlayerHandObstacles);
-        builder.setGreenPlayerHands(this.m_board.m_GreenPlayerDeckCards, this.m_board.m_GreenPlayerHandCards, this.m_board.m_GreenPlayerProgram, this.m_board.m_GreenPlayerHandObstacles);
-        builder.setPurplePlayerHands(this.m_board.m_PurplePlayerDeckCards, this.m_board.m_PurplePlayerHandCards, this.m_board.m_PurplePlayerProgram, this.m_board.m_PurplePlayerHandObstacles);
-        builder.setBluePlayerHands(this.m_board.m_BluePlayerDeckCards, this.m_board.m_BluePlayerHandCards, this.m_board.m_BluePlayerProgram, this.m_board.m_BluePlayerHandObstacles);
-
-
-
+            builder.setRedPlayerHands(this.m_board.m_RedPlayerDeckCards, this.m_board.m_RedPlayerHandCards, this.m_board.m_RedPlayerProgram, this.m_board.m_RedPlayerHandObstacles);
+            builder.setGreenPlayerHands(this.m_board.m_GreenPlayerDeckCards, this.m_board.m_GreenPlayerHandCards, this.m_board.m_GreenPlayerProgram, this.m_board.m_GreenPlayerHandObstacles);
+            builder.setPurplePlayerHands(this.m_board.m_PurplePlayerDeckCards, this.m_board.m_PurplePlayerHandCards, this.m_board.m_PurplePlayerProgram, this.m_board.m_PurplePlayerHandObstacles);
+            builder.setBluePlayerHands(this.m_board.m_BluePlayerDeckCards, this.m_board.m_BluePlayerHandCards, this.m_board.m_BluePlayerProgram, this.m_board.m_BluePlayerHandObstacles);
+        }else{
+            for(final Tile tile : this.m_board.getActiveTiles()){
+                    builder.setTile(tile);
+                }
+            }
 
         return builder.build();
     }
@@ -154,6 +163,15 @@ public abstract class Move {
 
     public Tile getM_movedTile(){
         return this.m_movedTile;
+    }
+
+
+
+    //Quand le mouvement est terminé
+    public static final class NullMove extends Move{
+        public NullMove(Board board, Tile tile){
+            super(board, tile);
+        }
     }
 
 
@@ -411,22 +429,6 @@ public abstract class Move {
 
 
     }
-
-    //Pour mouvement invalide
-    public static final class NullMove extends Move{
-
-        public NullMove() {
-            super(null, null);
-        }
-
-        @Override
-        public Board execute() {
-            throw new RuntimeException("Impossible d'executer le NullMove.");
-        }
-    }
-
-
-
 
 
 

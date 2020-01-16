@@ -16,10 +16,9 @@ Classe pour la pile du programme
 
 public class Program extends HandCards {
     private Player m_player;
-    private ArrayList<Card> cards;
     //constructeur
     public Program(){
-        cards = new ArrayList<Card>();
+        super();
     }
 
     // Ajouter une carte dans le programme
@@ -82,12 +81,12 @@ public class Program extends HandCards {
 
 
     // Exécuter le programme A COMPLETER
+    //TODO
     public void executeProgram(){
         for(Move move: this.calculateMoves()){
             this.m_player.makeMove(move);
         }
 
-        this.m_player.getM_deckCards().addToDiscard(this);
     }
 
 

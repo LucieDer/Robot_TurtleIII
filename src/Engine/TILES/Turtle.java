@@ -111,7 +111,12 @@ public class Turtle extends Tile {
     //Va créer une nouvelle tortue, exactement comme la précédente mais avec de nuovelles coordonnées
     @Override
     public Turtle moveTile(final Move move) {
-        return new Turtle(move.getM_movedTile().isM_isOnBoard(), move.getM_movedTile().getM_color(), move.getM_movedTile().getM_initialPosition(), move.getM_movedTile().getM_initialOrientation(), move.getFinalCoordinate(), move.getFinalOrientation());
+        if(!move.isLaser() &&!move.isMoving() &&!move.isPutting()){
+            return this;
+        }else{
+            return new Turtle(move.getM_movedTile().isM_isOnBoard(), move.getM_movedTile().getM_color(), move.getM_movedTile().getM_initialPosition(), move.getM_movedTile().getM_initialOrientation(), move.getFinalCoordinate(), move.getFinalOrientation());
+
+        }
     }
 
     @Override

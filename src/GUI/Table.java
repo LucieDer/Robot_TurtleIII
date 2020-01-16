@@ -40,10 +40,10 @@ public class Table {
     private static String defaultPieceImagesPath = "ArtTiles/";
 
     private final JFrame gameFrame;
-    private final BoardPanel boardPanel;
-    private final AllHands allHandsPanel;
-    private final OrientationPanel orientationPanel;
-    private final ActionPanel actionPanel;
+    private BoardPanel boardPanel;
+    private AllHands allHandsPanel;
+    private OrientationPanel orientationPanel;
+    private ActionPanel actionPanel;
 
     private Board RTBoard;
 
@@ -117,6 +117,21 @@ public class Table {
 
      */
 
+    public ActionPanel getActionPanel(){
+        return this.actionPanel;
+    }
+
+    public AllHands getAllHandsPanel() {
+        return allHandsPanel;
+    }
+
+    public BoardPanel getBoardPanel() {
+        return boardPanel;
+    }
+
+    public OrientationPanel getOrientationPanel() {
+        return orientationPanel;
+    }
 
     public Board getRTBoard() {
         return RTBoard;
@@ -184,13 +199,13 @@ public class Table {
         }
     }
 
-    private class OrientationPanel extends JPanel {
-        private final int currentOrientation;
-        private final int nbInDeck;
-        private final int nbInDiscarding;
-        private final JLabel label;
-        private final JLabel deck;
-        private final JLabel discarding;
+    public class OrientationPanel extends JPanel {
+        private int currentOrientation;
+        private int nbInDeck;
+        private int nbInDiscarding;
+        private JLabel label;
+        private JLabel deck;
+        private JLabel discarding;
         private final EtchedBorder PANEL_BORDER = new EtchedBorder(EtchedBorder.RAISED);
 
         OrientationPanel(){
@@ -220,6 +235,28 @@ public class Table {
 
         public int getCurrentOrientation() {
             return currentOrientation;
+        }
+
+        public void reDraw(Board board){
+            removeAll();
+            setBackground(Color.decode("#05ffa1"));
+            setBorder(PANEL_BORDER);
+            this.currentOrientation = board.getCurrentPlayer().getM_turtle().getM_orientation();
+            this.nbInDeck = board.getCurrentPlayer().getM_deckCards().getAmount();
+            this.nbInDiscarding = board.getCurrentPlayer().getM_deckCards().m_discarding.getAmount();
+
+            this.label = new JLabel("Orientation :\n" + orientationToString());
+            this.label.setFont(new Font("Verdana",1,10));
+            add(this.label, BorderLayout.NORTH);
+
+            this.deck = new JLabel("Deck :\n" + this.nbInDeck);
+            this.deck.setFont(new Font("Verdana",1,10));
+            add(this.deck, BorderLayout.CENTER);
+
+            this.discarding = new JLabel("Défausse :\n" + this.nbInDiscarding);
+            this.discarding.setFont(new Font("Verdana",1,10));
+            add(this.discarding, BorderLayout.SOUTH);
+            validate();
         }
 
         public String orientationToString(){
@@ -287,6 +324,8 @@ public class Table {
                                 @Override
                                 public void run() {
                                     actionPanel.redo(RTBoard);
+                                    allHandsPanel.getProgramPanel().redo(RTBoard);
+                                    allHandsPanel.getHandCardPanel().redo(RTBoard);
                                     boardPanel.drawBoard(RTBoard);
                                 }
                             });

@@ -1,5 +1,6 @@
 package GUI;
 
+import Engine.CARDS.Card;
 import Engine.CARDS.HandCards;
 import Engine.GAME.Board;
 import Engine.GAME.BoardUtils;
@@ -24,7 +25,7 @@ import static javax.swing.SwingUtilities.isRightMouseButton;
 public class AllHands extends JPanel{
     //private final JPanel allHands;
     private final HandCardsPanel handCardPanel;
-    private final JPanel programPanel;
+    private final ProgramPanel programPanel;
     //private Board RTBoard;
     private Table table;
 
@@ -36,16 +37,10 @@ public class AllHands extends JPanel{
         super(new BorderLayout(3,2));
         this.handCardPanel = new HandCardsPanel(table,false, table.getRTBoard().getCurrentPlayer().getM_handCards());
         this.handCardPanel.setBackground(Color.decode("#7c00e7"));
+        this.programPanel = new ProgramPanel(table);
 
         this.table = table;
-        if(table.getRTBoard().getCurrentPlayer().getM_program().getAmount() == 0){ //Programme vide
-            this.programPanel = new JPanel();
-            this.programPanel.setBackground(Color.green);
-            this.programPanel.setPreferredSize(CARDS_PANEL_DIMENSION);
 
-        }else{
-            this.programPanel = new HandCardsPanel(table, true, table.getRTBoard().getCurrentPlayer().getM_program());
-        }
 
 
         add(this.handCardPanel, BorderLayout.PAGE_START);
@@ -56,17 +51,22 @@ public class AllHands extends JPanel{
 
     }
 
-    void redo(final Board board){
 
+
+    public AllHands.HandCardsPanel getHandCardPanel() {
+        return handCardPanel;
     }
 
+    public ProgramPanel getProgramPanel() {
+        return programPanel;
+    }
 
     //Les cartes
-    private class HandCardsPanel extends JPanel {
-        final List<SingleCardPanel> handCards;
-        final HandCards m_hand;
-        final int amountInHand;
-        final boolean isProgram;
+    public class HandCardsPanel extends JPanel {
+        List<SingleCardPanel> handCards;
+        HandCards m_hand;
+        int amountInHand;
+        boolean isProgram;
 
         HandCardsPanel(Table table, boolean isProgram, HandCards hand){
             super(new GridLayout(1,hand.getAmount()));
@@ -87,12 +87,85 @@ public class AllHands extends JPanel{
             validate();
         }
 
-        public void drawBoard(Board rtBoard) {
+        HandCardsPanel(Table table){
+            super();
+            this.m_hand = table.getRTBoard().getCurrentPlayer().getM_handCards();
+            this.isProgram = true;
+            this.handCards = new ArrayList<>();
+            this.amountInHand = 0;
+        }
+
+        public void drawCardPanel(Board rtBoard) {
             removeAll();
             for(final SingleCardPanel cardPanel : handCards){
                 cardPanel.drawSquare(rtBoard);
                 add(cardPanel);
             }
+            validate();
+            repaint();
+        }
+
+        public void redo(Board rtBoard) {
+            removeAll();
+
+            this.isProgram = isProgram;
+            if(this.isProgram){
+                this.m_hand = rtBoard.getCurrentPlayer().getM_program();
+            }else{
+                this.m_hand = rtBoard.getCurrentPlayer().getM_handCards();
+            }
+            this.amountInHand = this.m_hand.getAmount();
+            this.handCards = new ArrayList<>();
+            if(this.amountInHand == 0){
+                add(new JPanel());
+            }else{
+                for(int i = 0; i< amountInHand; i++){
+                    //final SquarePanel squarePanel = new SquarePanel(this, i+1);
+                    final SingleCardPanel cardPanel = new SingleCardPanel(table, this.isProgram, m_hand, this, i);
+                    this.handCards.add(cardPanel);
+                    add(cardPanel);
+                }
+            }
+
+
+            setPreferredSize(AllHands.CARDS_PANEL_DIMENSION);
+            validate();
+
+
+        }
+    }
+
+
+
+    public class ProgramPanel extends JPanel{
+        List<Card> handCards = new ArrayList<>();
+        private JLabel cardList;
+
+        ProgramPanel(Table table){
+            super();
+            this.handCards = table.getRTBoard().getCurrentPlayer().getM_program().getCards();
+            this.cardList = new JLabel("Programme :\n" + table.getRTBoard().getCurrentPlayer().getM_program().showProgram() );
+
+            this.cardList.setFont(new Font("Verdana",1,30));
+            add(this.cardList);
+            validate();
+        }
+
+        public void redo(Board board){
+            removeAll();
+            for(Card card : board.getCurrentPlayer().getM_program().getCards()){
+                this.handCards.add(board.getCurrentPlayer().getM_program().getCard(card));
+            }
+
+            this.handCards = board.getCurrentPlayer().getM_program().getCards();
+            this.cardList = new JLabel("Programme :\n" );
+            if(this.handCards.size() > 0){
+                for(Card card : handCards){
+                    this.cardList.setText(this.cardList.getText() + " " + card.printColor());
+                }
+            }
+            this.cardList.setFont(new Font("Verdana",1,30));
+            add(this.cardList);
             validate();
             repaint();
         }
@@ -123,19 +196,32 @@ public class AllHands extends JPanel{
                         table.getRTBoard().setAddedCard(null);
 
                     }else if(isLeftMouseButton(e)){
-                        if(table.getRTBoard().isAddingCard() && table.getRTBoard().getAddedCard() == null){
+                        if(table.getRTBoard().isAddingCard() && table.getRTBoard().getAddedCard() == null) {
                             //On ajoute la carte sur le carré au programme
-                            table.getRTBoard().setAddedCard(table.getRTBoard().getCurrentPlayer().getM_handCards().getCards().get(cardId));
+                            table.getRTBoard().setAddedCard(table.getRTBoard().getCurrentPlayer().getM_handCards().getCards().remove(cardId));
                             table.getRTBoard().getCurrentPlayer().getM_program().add(table.getRTBoard().getAddedCard());
                             //Si on clique sur un carré occupé par une pièce, on annule le clic
+                            table.getRTBoard().setAddingCard(false);
+                            table.getRTBoard().setAddedCard(null);
+
+                        }
 
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    revalidate();
+                                    //redo actionpanel
+                                    table.getActionPanel().redo(table.getRTBoard());
+                                    //redo card panel
+                                    table.getAllHandsPanel().getProgramPanel().redo(table.getRTBoard());
+                                    table.getAllHandsPanel().getHandCardPanel().redo(table.getRTBoard());
+                                    //redo orientation panel
+                                    table.getOrientationPanel().reDraw(table.getRTBoard());
+                                    //table.getOrientationPanel().redo(table.getRTBoard());
+
+                                    validate();
                                 }
                             });
-                        }
+
                     }
                 }
 

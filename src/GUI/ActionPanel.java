@@ -52,6 +52,8 @@ public class ActionPanel extends JPanel {
 
         this.add(new FinishButton(table.getRTBoard()));
 
+        this.add(new TurnStatus(table.getRTBoard()));
+
 
         setPreferredSize(BOARD_PANEL_DIMENSION);
 
@@ -136,7 +138,7 @@ public class ActionPanel extends JPanel {
                         //Récupère 2eme tortue
                         final Tile otherTurtle = transition.getTransitionBoard().getSquare(goForward.getDestinationCoordinate()).getTile();
                         //Crée mouvement de retour à la case départ
-                        final Move.TurtleGoToInitialPosition otherTurtleGoToInitialPosition = new Move.TurtleGoToInitialPosition(board, otherTurtle);
+                        final Move.TurtleGoToInitialPosition otherTurtleGoToInitialPosition = new Move.TurtleGoToInitialPosition(transition.getTransitionBoard(), otherTurtle);
                         //Bouge la deuxième tortue
                         final MoveTransition secondTransition = transition.getTransitionBoard().getCurrentPlayer().makeMove(otherTurtleGoToInitialPosition);
                         //execute le mouvement de la deuxième tortue sur le plateau
@@ -177,7 +179,81 @@ public class ActionPanel extends JPanel {
                     table.getOrientationPanel().reDraw(table.getRTBoard());
                     table.getBoardPanel().drawBoard(table.getRTBoard());
                 }
+                //Carte Rouge = Laser
+                else if(card.getColor() == "Rouge"){
+                    final Move.TurtleLaser laser = new Move.TurtleLaser(board, board.getCurrentPlayer().getM_turtle());
+
+                    if(laser.isTurtle()){
+
+                        if(table.getRTBoard().getM_nbOfPlayers() == 2){
+                            //1er mouvement 1/2 tour pour la 1ere tortue
+                            final Move.TurtleTurnabout firstTurtleTurnabout = new Move.TurtleTurnabout(board, board.getCurrentPlayer().getM_turtle());
+
+                            //on récupère la 2eme tortue et on crée son mouvement
+                            final Tile otherTurtle = board.getSquare(laser.getDestinationCoordinate()).getTile();
+                            final Move.TurtleTurnabout secondTurtleTurnabout = new Move.TurtleTurnabout(board, otherTurtle);
+
+                            //On effectue les 2 mouvements
+                            final MoveTransition firstTransition = board.getCurrentPlayer().makeMove(firstTurtleTurnabout);
+                            final MoveTransition secondTransition = firstTransition.getTransitionBoard().getCurrentPlayer().makeMove(secondTurtleTurnabout);
+
+                            //On redéfinit le plateau
+                            table.setRTBoard(secondTransition.getTransitionBoard());
+                            //Tout redessiner
+
+                        }else{
+                            //1er mouvement 1/2 tour pour la 1ere tortue
+                            final Move.TurtleGoToInitialPosition firstTurtleGoBack = new Move.TurtleGoToInitialPosition(board, board.getCurrentPlayer().getM_turtle());
+
+                            //on récupère la 2eme tortue et on crée son mouvement
+                            final Tile otherTurtle = board.getSquare(laser.getDestinationCoordinate()).getTile();
+                            final Move.TurtleGoToInitialPosition secondTurtleGoBack = new Move.TurtleGoToInitialPosition(board, otherTurtle);
+
+                            //On effectue les 2 mouvements
+                            final MoveTransition firstTransition = board.getCurrentPlayer().makeMove(firstTurtleGoBack);
+                            final MoveTransition secondTransition = firstTransition.getTransitionBoard().getCurrentPlayer().makeMove(secondTurtleGoBack);
+
+                            //On redéfinit le plateau
+                            table.setRTBoard(secondTransition.getTransitionBoard());
+                        }
+                    }else if(laser.isJewel()){
+                        if(table.getRTBoard().getM_nbOfPlayers() == 2){
+                            //1er mouvement 1/2 tour pour la 1ere tortue
+                            final Move.TurtleTurnabout turnabout = new Move.TurtleTurnabout(board, board.getCurrentPlayer().getM_turtle());
+
+                            final MoveTransition firstTransition = board.getCurrentPlayer().makeMove(turnabout);
+
+                            //On redéfinit le plateau
+                            table.setRTBoard(firstTransition.getTransitionBoard());
+                        }else{
+                            final Move.TurtleTurnabout goBack = new Move.TurtleTurnabout(board, board.getCurrentPlayer().getM_turtle());
+                            final MoveTransition firstTransition = board.getCurrentPlayer().makeMove(goBack);
+
+                            //On redéfinit le plateau
+                            table.setRTBoard(firstTransition.getTransitionBoard());
+                        }
+                    }else if(laser.isIceWall()){
+                        //On accède au mur et dit qu'il n'est plus sur le plateau
+                        IceWall newIceWall = (IceWall)board.getSquare(laser.getDestinationCoordinate()).getTile();
+                        newIceWall.setM_isOnBoard(false);
+                        //on l'ajoute à la pioche des obstacles
+                        //board.getDeckObstacles().add(newIceWall);
+                        //On supprime le mur de glace sur le plateau
+                        table.getRTBoard().getActiveTiles().remove(board.getSquare(laser.getDestinationCoordinate()).getTile());
+
+                    }
+                    table.getAllHandsPanel().getProgramPanel().redo(table.getRTBoard());
+                    table.getAllHandsPanel().getHandCardPanel().redo(table.getRTBoard());
+                    table.getOrientationPanel().reDraw(table.getRTBoard());
+                    table.getBoardPanel().drawBoard(table.getRTBoard());
+
+                }
+
                 executeProgram(table.getRTBoard());
+                table.getAllHandsPanel().getProgramPanel().redo(table.getRTBoard());
+                table.getAllHandsPanel().getHandCardPanel().redo(table.getRTBoard());
+                table.getOrientationPanel().reDraw(table.getRTBoard());
+                table.getBoardPanel().drawBoard(table.getRTBoard());
 
             }
         }
@@ -270,7 +346,7 @@ public class ActionPanel extends JPanel {
     private class AddToProgramButton extends JPanel{
         AddToProgramButton(Board board, Table table){
             super();
-            JButton programButton = new JButton("Ajouter une carte au programme");
+            JButton programButton = new JButton("Ajouter des cartes au programme");
             this.add(programButton);
             //Bouton ajouter une carte au programme
             programButton.addMouseListener(new MouseListener() {
@@ -433,6 +509,27 @@ public class ActionPanel extends JPanel {
     }
 
 
+    private class TurnStatus extends JPanel{
+        private String currentStatus;
+
+        TurnStatus(Board board){
+            if(board.isFinished()){
+                currentStatus = "         Cliquez sur les cartes à défausser";
+            }else if(!board.isTurnFinished()){
+                currentStatus = "    Choisissez une action";
+            }else if(board.isTurnFinished()){
+                currentStatus = "Tour terminé. Cliquez sur le bouton 'Finir' ";
+            }
+
+            JLabel jlabel = new JLabel(currentStatus);
+            jlabel.setFont(new Font("Verdana",1,11));
+            this.add(jlabel);
+        }
+
+
+    }
+
+
 
 
 
@@ -501,6 +598,9 @@ public class ActionPanel extends JPanel {
 
         this.add(new FinishButton(board));
 
+        this.add(new TurnStatus(board));
+
+
 
 
         setPreferredSize(BOARD_PANEL_DIMENSION);
@@ -508,4 +608,8 @@ public class ActionPanel extends JPanel {
 
         validate();
     }
+
+
+
+
 }

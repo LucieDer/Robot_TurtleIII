@@ -304,6 +304,21 @@ public class Board {
     }
 
 
+    //Accéder à une tortue d'une certaine couleur
+    public Tile getTurtle(Color color){
+        if(color == Color.ROUGE){
+            getRedTurtle();
+        }else if(color == Color.VERT){
+            getGreenTurtle();
+        }else if(color == Color.VIOLET){
+            getPurpleTurtle();
+        }else if(color == Color.BLEU){
+            getBluePlayer();
+        }else return null;
+        return null;
+    }
+
+
     //Accéder aux joueurs :
 
 
@@ -421,8 +436,8 @@ public class Board {
                 //Joueur Violet
                 builder.setPurplePlayerHands(new DeckCards(),new HandCards(), new Program(), builder.m_deckObstacles.createBasicHand());
                 builder.m_PurplePlayerDeckCards.populate();
-                builder.m_GreenPlayerDeckCards.shuffle();
-                builder.m_PurplePlayerDeckCards.deal(builder.m_GreenPlayerHandCards, 5);
+                builder.m_PurplePlayerDeckCards.shuffle();
+                builder.m_PurplePlayerDeckCards.deal(builder.m_PurplePlayerHandCards, 5);
 
 
                 break;

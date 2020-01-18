@@ -9,11 +9,9 @@ import Engine.PLAYERS.MoveTransition;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -80,42 +78,7 @@ public class Table {
     }
 
 
-    /*
-//Constructeur pour changer le nb de joueurs
-    public Table(final int nbOfPlayer){
-        this.gameFrame = new JFrame("Robot Turtles");
-        this.gameFrame.setLayout(new BorderLayout());
 
-        this.nbOfPlayer = nbOfPlayer;
-
-        //Créer la bande à dérouler en haut
-        final JMenuBar tableMenuBar = createMenuBar();
-        this.gameFrame.setJMenuBar(tableMenuBar);
-        this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
-
-        //Crée un plateau
-        this.RTBoard = Board.createStandardBoard(this.nbOfPlayer);
-        this.boardPanel = new BoardPanel();
-        //this.boardPanel.setBounds(10, 10, 300, 300);
-
-
-        //Crée partie avec les cartes
-        this.allHandsPanel = new AllHands(this);
-        this.orientationPanel = new OrientationPanel();
-
-        //this.actionPanel.setBounds(500, 1, 10, 10);
-
-
-        this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
-        this.gameFrame.add(this.allHandsPanel, BorderLayout.SOUTH);
-        this.gameFrame.add(this.orientationPanel, BorderLayout.WEST);
-        //this.gameFrame.add(debugPanel, BorderLayout.SOUTH);
-
-        gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.gameFrame.setVisible(true);
-    }
-
-     */
 
     public ActionPanel getActionPanel(){
         return this.actionPanel;
@@ -137,6 +100,15 @@ public class Table {
         return RTBoard;
     }
 
+    public void newGame(int nbOfPlayer){
+        RTBoard = Board.createStandardBoard(nbOfPlayer);
+        this.actionPanel.redo(RTBoard);
+        this.allHandsPanel.getProgramPanel().redo(RTBoard);
+        this.allHandsPanel.getHandCardPanel().redo(RTBoard);
+        this.orientationPanel.reDraw(RTBoard);
+        this.boardPanel.drawBoard(RTBoard);
+    }
+
     private JMenuBar createMenuBar() {
         final JMenuBar tableMenuBar = new JMenuBar();
         tableMenuBar.add(createFileMenu());
@@ -146,14 +118,46 @@ public class Table {
     private JMenu createFileMenu() {
         final JMenu optionMenu = new JMenu("Options");
 
-        final JCheckBoxMenuItem nbOfPlayersCheckBox = new JCheckBoxMenuItem("Nombre de joueurs");
-        nbOfPlayersCheckBox.addActionListener(new ActionListener() {
+        final JMenuItem resetMenuItem = new JMenuItem("Nouvelle Partie", KeyEvent.VK_P);
+        resetMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                newGame(RTBoard.getM_nbOfPlayers());
+            }
+
+        });
+        optionMenu.add(resetMenuItem);
+
+
+
+        final ButtonGroup nbOfPlayerButtons = new ButtonGroup();
+
+        final JRadioButtonMenuItem twoPlayersRadioButton = new JRadioButtonMenuItem("2 Joueurs");
+        twoPlayersRadioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
             }
         });
-        optionMenu.add(nbOfPlayersCheckBox);
+        optionMenu.add(twoPlayersRadioButton);
+
+        final JRadioButtonMenuItem threePlayersRadioButton = new JRadioButtonMenuItem("3 Joueurs");
+        threePlayersRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                newGame(3);
+            }
+        });
+        optionMenu.add(threePlayersRadioButton);
+
+        final JRadioButtonMenuItem fourPlayersRadioButton = new JRadioButtonMenuItem("4 Joueurs");
+        fourPlayersRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                newGame(4);
+            }
+        });
+        optionMenu.add(fourPlayersRadioButton);
 
 
         //Créer option pour quitter
@@ -166,6 +170,8 @@ public class Table {
             }
         });
         optionMenu.add(exitMenuItem);
+
+
 
         return optionMenu;
     }
@@ -187,6 +193,8 @@ public class Table {
                 this.boardSquares.add(squarePanel);
                 add(squarePanel);
             }
+
+            this.setBorder(new LineBorder(Color.BLACK));
 
             setPreferredSize(BOARD_PANEL_DIMENSION);
             validate();
@@ -220,9 +228,13 @@ public class Table {
             this.nbInDeck = RTBoard.getCurrentPlayer().getM_deckCards().getAmount();
             this.nbInDiscarding = RTBoard.getCurrentPlayer().getM_deckCards().m_discarding.getAmount();
 
-            this.label = new JLabel("Orientation :\n" + orientationToString());
+            this.label = new JLabel("Orientation :\n");
             this.label.setFont(new Font("Verdana",1,10));
             add(this.label, BorderLayout.NORTH);
+
+            this.label = new JLabel( orientationToString());
+            this.label.setFont(new Font("Verdana",1,18));
+            add(this.label, BorderLayout.PAGE_START);
 
             this.deck = new JLabel("Deck :\n" + this.nbInDeck);
             this.deck.setFont(new Font("Verdana",1,10));
@@ -318,6 +330,7 @@ public class Table {
                                     final MoveTransition transition = RTBoard.getCurrentPlayer().makeMove(movePutObstacle);
                                     if(transition.getMoveStatus().isDone()){
                                         RTBoard = transition.getTransitionBoard();
+                                        RTBoard.setTurnFinished(true);
                                     }
                                 }
                                 destinationSquare = null;
@@ -428,8 +441,13 @@ public class Table {
         }
 
         private void assignSquareColor() {
-            boolean isLight;
-            if(squareId%8 == 0) {
+            boolean isLight = false;
+            if(BoardUtils.convertIntoXYPosition(squareId).get(0) == RTBoard.getCurrentPlayer().getM_turtle().getTilePosition().get(0) &&
+                    BoardUtils.convertIntoXYPosition(squareId).get(1) == RTBoard.getCurrentPlayer().getM_turtle().getTilePosition().get(1)){
+                setBackground(Color.decode("#ff0045"));
+                return;
+            }
+            else if(squareId%8 == 0) {
                 int columnId = BoardUtils.convertIntoXYPosition(squareId).get(0);
                 isLight = (columnId%2 == 0);
             } else  isLight = ((squareId + squareId / 8) % 2 == 0);

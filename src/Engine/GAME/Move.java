@@ -391,7 +391,17 @@ public abstract class Move {
 
         }
 
+        public boolean isIceWall() {
+            return iceWall;
+        }
 
+        public boolean isJewel() {
+            return jewel;
+        }
+
+        public boolean isTurtle() {
+            return turtle;
+        }
     }
 
 

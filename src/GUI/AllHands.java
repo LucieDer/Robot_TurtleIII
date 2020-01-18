@@ -31,7 +31,7 @@ public class AllHands extends JPanel{
     private Table table;
 
     private static final Dimension CARDS_PANEL_DIMENSION = new Dimension(30,130) ;
-    public static final Dimension SINGLE_CARD_PANEL_DIMENSION = new Dimension(300, 600);
+    public static final Dimension SINGLE_CARD_PANEL_DIMENSION = new Dimension(260, 570);
     public static String defaultPieceImagesPath = "ArtTiles/";
 
     public AllHands(Table table){

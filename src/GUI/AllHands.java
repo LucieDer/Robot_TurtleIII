@@ -195,17 +195,17 @@ public class AllHands extends JPanel{
 
                     }else if(isLeftMouseButton(e)){
                         //Si le joueur veut ajouter une carte au programme
-                        if(table.getRTBoard().isAddingCard() && table.getRTBoard().getAddedCard() == null) {
+                        if(table.getRTBoard().isAddingCard() && table.getRTBoard().getAddedCard() == null && !table.getRTBoard().isFinished()) {
                             //On ajoute la carte sur le carré au programme
                             table.getRTBoard().setAddedCard(table.getRTBoard().getCurrentPlayer().getM_handCards().getCards().remove(cardId));
                             table.getRTBoard().getCurrentPlayer().getM_program().add(table.getRTBoard().getAddedCard());
 
-                            table.getRTBoard().setAddingCard(false);
                             table.getRTBoard().setAddedCard(null);
 
                         }
                         //Si le joueur veut finir le tour
                         else if(table.getRTBoard().isFinished() && table.getRTBoard().getAddedCard() == null){
+                            table.getRTBoard().setTurnFinished(true);
                             //On ajoute la carte sur le carré à la défausse
                             table.getRTBoard().setAddedCard(table.getRTBoard().getCurrentPlayer().getM_handCards().getCards().remove(cardId));
                             table.getRTBoard().getCurrentPlayer().getM_deckCards().addToDiscard(table.getRTBoard().getAddedCard());

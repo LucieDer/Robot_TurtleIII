@@ -1,10 +1,12 @@
 package GUI;
 
+import Engine.CARDS.Card;
 import Engine.GAME.Board;
 import Engine.GAME.BoardUtils;
 import Engine.GAME.Move;
 import Engine.PLAYERS.MoveTransition;
 import Engine.TILES.Obstacles.IceWall;
+import Engine.TILES.Tile;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -42,8 +44,7 @@ public class ActionPanel extends JPanel {
 
         this.add(new AddToProgramButton(table.getRTBoard(), table));
 
-        JButton executeButton = new JButton("Exécuter le programme");
-        this.add(executeButton);
+        this.add(new ExecuteButton(table.getRTBoard()));
 
         this.add(new StoneWallButton(table.getRTBoard()));
 
@@ -60,7 +61,128 @@ public class ActionPanel extends JPanel {
 
 
 
+
+
+
+
     //SOUS CLASSES POUR LES BOUTONS
+
+
+    //Bouton pour exécuter le programme
+    private class ExecuteButton extends JPanel {
+        ExecuteButton(Board board) {
+            super();
+            JButton executeButton = new JButton("Executer le programme");
+            this.add(executeButton);
+
+            executeButton.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (isLeftMouseButton(e)) {
+                        if (!board.isFinished() && !board.isTurnFinished()) {
+                        }
+
+                        executeProgram(table.getRTBoard());
+                        table.getRTBoard().setTurnFinished(true);
+                    }
+                }
+
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+
+                }
+            });
+
+        }
+
+        public void executeProgram(Board board) {
+            //Vérifier que le joueur n'a pas appuyé sur le bouton pour finir le tour
+
+            if (board.getCurrentPlayer().getM_program().getCards().size() > 0) {
+                //Prendre la 1ere carte dans le programme
+                Card card = board.getCurrentPlayer().getM_program().getCards().remove(0);
+                board.getCurrentPlayer().getM_deckCards().addToDiscard(card);
+
+                table.getAllHandsPanel().getProgramPanel().redo(table.getRTBoard());
+                table.getOrientationPanel().reDraw(table.getRTBoard());
+
+                //Carte bleue = avancer
+                if (card.getColor() == "Bleu") {
+                    final Move.TurtleGoForward goForward = new Move.TurtleGoForward(board, board.getCurrentPlayer().getM_turtle());
+
+                    final MoveTransition transition = board.getCurrentPlayer().makeMove(goForward);
+                    //execute le 1er mouvement
+                    table.setRTBoard(transition.getTransitionBoard());
+
+
+                    //Si tortue rencontre une autre tortue : créer un deuxième mouvment pour la 2eme tortue
+                    if(goForward.isAnotherTurtle()) {
+                        //Récupère 2eme tortue
+                        final Tile otherTurtle = transition.getTransitionBoard().getSquare(goForward.getDestinationCoordinate()).getTile();
+                        //Crée mouvement de retour à la case départ
+                        final Move.TurtleGoToInitialPosition otherTurtleGoToInitialPosition = new Move.TurtleGoToInitialPosition(board, otherTurtle);
+                        //Bouge la deuxième tortue
+                        final MoveTransition secondTransition = transition.getTransitionBoard().getCurrentPlayer().makeMove(otherTurtleGoToInitialPosition);
+                        //execute le mouvement de la deuxième tortue sur le plateau
+                        table.setRTBoard(secondTransition.getTransitionBoard());
+                        //Redessine le plateau, les cartes et le panel d'info
+                        table.getAllHandsPanel().getProgramPanel().redo(table.getRTBoard());
+                        table.getAllHandsPanel().getHandCardPanel().redo(table.getRTBoard());
+                        table.getOrientationPanel().reDraw(table.getRTBoard());
+                        table.getBoardPanel().drawBoard(table.getRTBoard());
+
+                    }else{
+                        table.getAllHandsPanel().getProgramPanel().redo(table.getRTBoard());
+                        table.getAllHandsPanel().getHandCardPanel().redo(table.getRTBoard());
+                        table.getOrientationPanel().reDraw(table.getRTBoard());
+                        table.getBoardPanel().drawBoard(table.getRTBoard());
+                    }
+
+
+                    //Carte Verte = tourner à gauche
+                } else if (card.getColor() == "Vert") {
+                    final Move.TurtleTurnLeft turnLeft = new Move.TurtleTurnLeft(board, board.getCurrentPlayer().getM_turtle());
+                    final MoveTransition transition = board.getCurrentPlayer().makeMove(turnLeft);
+                    table.setRTBoard(transition.getTransitionBoard());
+                    //Tout redessiner
+                    table.getAllHandsPanel().getProgramPanel().redo(table.getRTBoard());
+                    table.getAllHandsPanel().getHandCardPanel().redo(table.getRTBoard());
+                    table.getOrientationPanel().reDraw(table.getRTBoard());
+                    table.getBoardPanel().drawBoard(table.getRTBoard());
+
+                    //Carte Violette = tourner à droite
+                } else if (card.getColor() == "Violet") {
+                    final Move.TurtleTurnRight turnRight = new Move.TurtleTurnRight(board, board.getCurrentPlayer().getM_turtle());
+                    final MoveTransition transition = board.getCurrentPlayer().makeMove(turnRight);
+                    table.setRTBoard(transition.getTransitionBoard());
+                    //Tout redessiner
+                    table.getAllHandsPanel().getProgramPanel().redo(table.getRTBoard());
+                    table.getAllHandsPanel().getHandCardPanel().redo(table.getRTBoard());
+                    table.getOrientationPanel().reDraw(table.getRTBoard());
+                    table.getBoardPanel().drawBoard(table.getRTBoard());
+                }
+                executeProgram(table.getRTBoard());
+
+            }
+        }
+
+    }
 
     //Bouton pour finir le tour
     private class FinishButton extends JPanel{
@@ -73,7 +195,7 @@ public class ActionPanel extends JPanel {
             passButton.addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    //POSER OBSTACLE
+                    //FINIR LE TOUR
                     if(isRightMouseButton(e)){
                         board.setFinished(false);
                     } else if (isLeftMouseButton(e)) {
@@ -83,12 +205,17 @@ public class ActionPanel extends JPanel {
                         } else if (board.isFinished()) {
                             //Le joueur pioche
                             while(board.getCurrentPlayer().getM_handCards().getAmount()<5){
+                                //Vérifie si la pioche a moins de 5 cartes, si oui elle redistribue depuis la défausse
+                                if(board.getCurrentPlayer().getM_deckCards().getAmount() < 5){
+                                    board.getCurrentPlayer().getM_deckCards().repopulateFromDiscarding();
+                                }
                                 board.getCurrentPlayer().getM_deckCards().deal(board.getCurrentPlayer().getM_handCards(), 1);
                             }
 
                             final Move.NullMove nullMove = new Move.NullMove(board, board.getCurrentPlayer().getM_turtle());
                             final MoveTransition transition = board.getCurrentPlayer().makeMove(nullMove);
                             table.setRTBoard(transition.getTransitionBoard());
+
                             if (transition.getMoveStatus().isDone()) {
                                 //redo l'action panel
 
@@ -104,6 +231,7 @@ public class ActionPanel extends JPanel {
                                 table.getAllHandsPanel().getHandCardPanel().redo(table.getRTBoard());
                                 table.getOrientationPanel().reDraw(table.getRTBoard());
                                 table.getBoardPanel().drawBoard(table.getRTBoard());
+
                             }
                         });
 
@@ -152,9 +280,15 @@ public class ActionPanel extends JPanel {
                     if(isRightMouseButton(e)){
                         board.setAddingCard(false);
                     } else if(isLeftMouseButton(e)){
-                        if(!board.isAddingCard()){
-                            board.setAddingCard(true);
+                        if(!board.isAddingCard() && !board.isTurnFinished() && !board.isFinished()){
+                            if(!board.isAddingCard()){
+                                board.setAddingCard(true);
+                            }else{
+                                board.setAddingCard(false);
+                            }
+
                         }
+
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
@@ -163,6 +297,7 @@ public class ActionPanel extends JPanel {
                                 table.getAllHandsPanel().getHandCardPanel().redo(board);
                                 table.getOrientationPanel().reDraw(board);
                                 table.getBoardPanel().drawBoard(board);
+                                table.getRTBoard().setTurnFinished(true);
                             }
                         });
 
@@ -213,7 +348,7 @@ public class ActionPanel extends JPanel {
                     if(isRightMouseButton(e)){
                         board.setMovedObstacle(null);
                     } else if(isLeftMouseButton(e)){
-                        if(board.getMovedObstacle() == null){
+                        if(board.getMovedObstacle() == null && !board.isTurnFinished() && !board.isFinished()){
                             board.setMovedObstacle(board.getCurrentPlayer().getM_HandObstacles().getStoneWall());
 
                         }
@@ -265,7 +400,7 @@ public class ActionPanel extends JPanel {
                     if(isRightMouseButton(e)){
                         board.setMovedObstacle(null);
                     } else if(isLeftMouseButton(e)){
-                        if(board.getMovedObstacle() == null){
+                        if(board.getMovedObstacle() == null && !board.isTurnFinished() && !board.isFinished()){
                             board.setMovedObstacle(board.getCurrentPlayer().getM_HandObstacles().getIceWall());
 
                         }
@@ -358,8 +493,7 @@ public class ActionPanel extends JPanel {
 
         this.add(new AddToProgramButton(board, this.table));
 
-        JButton executeButton = new JButton("Exécuter le programme");
-        this.add(executeButton);
+        this.add(new ExecuteButton(board));
 
         this.add(new StoneWallButton(board));
 

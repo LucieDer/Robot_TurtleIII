@@ -66,8 +66,6 @@ public abstract class Tile {
     //METHODES
 
 
-
-
     public int getM_currentOrientation() {
         return m_currentOrientation;
     }

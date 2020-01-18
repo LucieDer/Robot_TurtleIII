@@ -72,6 +72,9 @@ public abstract class Player {
         return m_isWinner;
     }
 
+    public void setM_isWinner(boolean m_isWinner) {
+        this.m_isWinner = m_isWinner;
+    }
 
     //TODO
     //Savoir si le joueur peut faire une action
@@ -92,7 +95,7 @@ public abstract class Player {
 
         //Vérifie si c'est un programme en cours d'execution
         else if(move.isMoving() && move.getM_board().getCurrentPlayer().getM_program().getAmount() !=0){
-            final Board transitionBoard = move.executeProgram();
+            final Board transitionBoard = move.execute();
             return new MoveTransition(transitionBoard, move, MoveStatus.IS_IN_PROGRESS);
         }
 

@@ -1,5 +1,6 @@
 package Engine.GAME;
 
+import Engine.PLAYERS.MoveStatus;
 import Engine.TILES.Tile;
 
 import java.util.ArrayList;
@@ -19,10 +20,13 @@ public abstract class Move {
     int finalOrientation;
     int destinationOrientation;
 
+    protected MoveStatus moveStatus;
+
     protected boolean isMoving = false;
     protected boolean isPutting = false;
     protected boolean isTurning = false;
     protected boolean isLaser = false;
+    protected boolean isOnjewel = false;
     protected boolean moveIllegal = true;
 
     //protected static final Move NULL_MOVE = new NullMove();
@@ -129,8 +133,13 @@ public abstract class Move {
             }
             //Représenter la pièce déplacée : crée une nouvelle pièce sur plateau avec de nouveaux paramètres
             builder.setTile(this.m_movedTile.moveTile(this));
-            //Passer au joueur suivant
-            builder.setMoveMaker(this.m_board.getCurrentPlayer().getNextPlayer().getColor());
+            //Passer au joueur suivant si le joueur a fini le tour
+            if(this.moveStatus == MoveStatus.DONE){
+                builder.setMoveMaker(this.m_board.getCurrentPlayer().getNextPlayer().getColor());
+            }else{
+                builder.setMoveMaker(this.m_board.getCurrentPlayer().getColor());
+            }
+
 
             builder.setRedPlayerHands(this.m_board.m_RedPlayerDeckCards, this.m_board.m_RedPlayerHandCards, this.m_board.m_RedPlayerProgram, this.m_board.m_RedPlayerHandObstacles);
             builder.setGreenPlayerHands(this.m_board.m_GreenPlayerDeckCards, this.m_board.m_GreenPlayerHandCards, this.m_board.m_GreenPlayerProgram, this.m_board.m_GreenPlayerHandObstacles);
@@ -143,6 +152,10 @@ public abstract class Move {
             }
 
         return builder.build();
+    }
+
+    public MoveStatus getMoveStatus() {
+        return moveStatus;
     }
 
     public Board executeProgram() { //Différence avec celui-au dessus : le joueur le change pas
@@ -171,6 +184,7 @@ public abstract class Move {
     public static final class NullMove extends Move{
         public NullMove(Board board, Tile tile){
             super(board, tile);
+            this.moveStatus = MoveStatus.DONE;
         }
     }
 
@@ -187,43 +201,62 @@ public abstract class Move {
         List<Integer> currPosition;
         List<Integer> secondTurtlePosition;
         boolean anotherTurtle = false;
-        boolean Jewel = false;
+        boolean jewel = false;
+        boolean obstacle = false;
 
 
         public TurtleGoForward(Board board, Tile movedTile) {
             super(board, movedTile);
+            this.initialCoordinate = movedTile.getM_initialPosition();
+
+            this.moveStatus = MoveStatus.IS_IN_PROGRESS;
             this.isMoving = true;
             currPosition = this.destinationCoordinate;
             switch(movedTile.getM_currentOrientation()){
-                case BoardUtils.TURNED_UP: //x-1
+                case (BoardUtils.TURNED_UP): //x-1
                     this.destinationCoordinate.set(0, destX-1);
                     break;
-                case BoardUtils.TURNED_DOWN: //x+1
+                case (BoardUtils.TURNED_DOWN): //x+1
                     this.destinationCoordinate.set(0, destX+1);
                     break;
-                case BoardUtils.TURNED_TO_LEFT: //y-1
+                case (BoardUtils.TURNED_TO_LEFT): //y-1
                     this.destinationCoordinate.set(1, destY-1);
                     break;
-                case BoardUtils.TURNED_TO_RIGHT: //y+1
+                case (BoardUtils.TURNED_TO_RIGHT): //y+1
                     this.destinationCoordinate.set(1, destY+1);
                     break;
             }
 
+            //Destination en dehors du plateau : retour à case départ
             if(this.destinationCoordinate.get(0) > 7 || this.destinationCoordinate.get(1) > 7 ||
-                    this.destinationCoordinate.get(0) < 0 || this.destinationCoordinate.get(1) < 0){  //Destination en dehors du plateau : retour à case départ
+                    this.destinationCoordinate.get(0) < 0 || this.destinationCoordinate.get(1) < 0){
                 this.finalCoordinate = movedTile.getM_initialPosition();
                 this.finalOrientation = BoardUtils.TURNED_DOWN;
             }
-            else if(board.getSquare(this.destinationCoordinate).getTile().getType() == "Obstacle"){ //Demi-tour devant obstacle
+            //Case vide : ne rien faire
+            else if(!board.getSquare(this.destinationCoordinate).isSquareOccupied()){
+                this.finalCoordinate = this.destinationCoordinate;
+            }
+            //Demi-tour devant obstacle
+            else if(board.getSquare(this.destinationCoordinate).getTile().getType() == "Obstacle"){
+                this.obstacle = true;
                 this.finalOrientation = BoardUtils.turnaboutOrientation(this.getCurrentOrientation());
             }
+            //Devant autre tortue : Retour à la case départ
             else if(board.getSquare(this.destinationCoordinate).getTile().getType() == "Tortue"){
                 //TODO
                 this.anotherTurtle = true;
                 this.finalCoordinate = movedTile.getM_initialPosition();
                 this.finalOrientation = BoardUtils.TURNED_DOWN;
 
-                this.setAnotherTurtle(true);
+            }
+            else {
+                if(board.getSquare(this.destinationCoordinate).getTile().getType() == "Joyau"){
+                    this.isOnjewel = true;
+                    board.getCurrentPlayer().setM_isWinner(true);
+                }
+                this.finalCoordinate = this.destinationCoordinate;
+
             }
 
 
@@ -246,9 +279,9 @@ public abstract class Move {
         public TurtleGoToInitialPosition(Board board, Tile movedTile) {
             super(board, movedTile);
             this.isMoving = true;
-            this.finalCoordinate = movedTile.getTilePosition();
+            this.finalCoordinate = movedTile.getM_initialPosition();
             this.finalOrientation = BoardUtils.TURNED_DOWN;
-
+            this.moveStatus = MoveStatus.IS_IN_PROGRESS;
 
         }
 
@@ -259,6 +292,7 @@ public abstract class Move {
         public TurtleTurnRight(final Board board, final Tile tile) {
             super(board, tile);
             this.isTurning = true;
+            this.moveStatus = MoveStatus.IS_IN_PROGRESS;
             switch (tile.getM_currentOrientation()) {
                 case BoardUtils.TURNED_UP: //x-1
                     this.finalOrientation = BoardUtils.TURNED_TO_RIGHT;
@@ -283,6 +317,7 @@ public abstract class Move {
         public TurtleTurnLeft(final Board board, final Tile tile) {
             super(board, tile);
             this.isTurning = true;
+            this.moveStatus = MoveStatus.IS_IN_PROGRESS;
             switch (tile.getM_currentOrientation()) {
                 case BoardUtils.TURNED_UP: //x-1
                     this.finalOrientation = BoardUtils.TURNED_TO_LEFT;
@@ -315,6 +350,7 @@ public abstract class Move {
         public TurtleLaser(final Board board, final Tile tile){
             super(board, tile);
             this.isLaser = true;
+            this.moveStatus = MoveStatus.IS_IN_PROGRESS;
             switch(tile.getM_currentOrientation()){
                 case BoardUtils.TURNED_UP: //x-1
                     this.destinationCoordinate.set(0, destX-1);
@@ -365,6 +401,7 @@ public abstract class Move {
         public TurtleTurnabout(final Board board, final Tile tile){
             super(board, tile);
             this.isTurning = true;
+            this.moveStatus = MoveStatus.IS_IN_PROGRESS;
             this.finalOrientation = BoardUtils.turnaboutOrientation(tile.getM_currentOrientation());
         }
 

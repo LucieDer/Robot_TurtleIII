@@ -216,7 +216,7 @@ public class Table {
             super(new BorderLayout());
             setBackground(Color.decode("#05ffa1"));
             setBorder(PANEL_BORDER);
-            this.currentOrientation = RTBoard.getCurrentPlayer().getM_turtle().getM_orientation();
+            this.currentOrientation = RTBoard.getCurrentPlayer().getM_turtle().getM_currentOrientation();
             this.nbInDeck = RTBoard.getCurrentPlayer().getM_deckCards().getAmount();
             this.nbInDiscarding = RTBoard.getCurrentPlayer().getM_deckCards().m_discarding.getAmount();
 
@@ -245,7 +245,7 @@ public class Table {
             removeAll();
             setBackground(Color.decode("#05ffa1"));
             setBorder(PANEL_BORDER);
-            this.currentOrientation = board.getCurrentPlayer().getM_turtle().getM_orientation();
+            this.currentOrientation = board.getCurrentPlayer().getM_turtle().getM_currentOrientation();
             this.nbInDeck = board.getCurrentPlayer().getM_deckCards().getAmount();
             this.nbInDiscarding = board.getCurrentPlayer().getM_deckCards().m_discarding.getAmount();
 
@@ -331,6 +331,7 @@ public class Table {
                                     allHandsPanel.getHandCardPanel().redo(RTBoard);
                                     orientationPanel.reDraw(RTBoard);
                                     boardPanel.drawBoard(RTBoard);
+                                    RTBoard.setTurnFinished(true);
                                 }
                             });
                         }

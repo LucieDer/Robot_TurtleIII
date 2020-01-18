@@ -9,7 +9,6 @@ import java.util.List;
 import static Engine.TILES.Type.TORTUE;
 
 public class Turtle extends Tile {
-    private int m_orientation;
     private int m_initialX;
     private final int m_initialY;
     private final int m_initialOrientation;
@@ -17,8 +16,8 @@ public class Turtle extends Tile {
     private boolean m_isOnJewel;
     private final Type m_type = TORTUE;
 
-    private List<Integer> m_initialPosition;
-    private List<Integer> m_currentPosition;
+    private List<Integer> m_initialPosition = new ArrayList<>();
+    private List<Integer> m_currentPosition = new ArrayList<>();
 
 
     public Turtle(boolean isOnBoard, Color color, int xInitial, int yInitial, int orientationInitial){
@@ -26,7 +25,11 @@ public class Turtle extends Tile {
         this.m_color = color;
         this.m_x = xInitial;
         this.m_y = yInitial;
-        this.m_orientation = orientationInitial;
+        this.m_initialPosition.add(xInitial);
+        this.m_initialPosition.add(yInitial);
+        this.m_currentPosition.add(xInitial);
+        this.m_currentPosition.add(yInitial);
+        this.m_currentOrientation = orientationInitial;
         this.m_initialX = xInitial;
         this.m_initialY = yInitial;
         this.m_initialOrientation = orientationInitial;
@@ -37,8 +40,9 @@ public class Turtle extends Tile {
         this.m_color = color;
         this.m_x = currentPosition.get(0);
         this.m_y = currentPosition.get(1);
+        this.m_currentPosition = currentPosition;
         this.m_initialPosition = initialPosition;
-        this.m_orientation = orientation;
+        this.m_currentOrientation = orientation;
         this.m_initialX = initialPosition.get(0);;
         this.m_initialY = initialPosition.get(1);
         this.m_initialOrientation = initialOrientation;
@@ -58,10 +62,7 @@ public class Turtle extends Tile {
         return position;
     }
 
-    //Accéder à l'orientation actuelle
-    public int getM_orientation(){
-        return m_orientation;
-    }
+
 
 
 
@@ -111,11 +112,13 @@ public class Turtle extends Tile {
     //Va créer une nouvelle tortue, exactement comme la précédente mais avec de nuovelles coordonnées
     @Override
     public Turtle moveTile(final Move move) {
-        if(!move.isLaser() &&!move.isMoving() &&!move.isPutting()){
+        //si le mouvement est null
+        if(!move.isLaser() &&!move.isMoving() &&!move.isPutting() &&!move.isTurning()){
             return this;
-        }else{
-            return new Turtle(move.getM_movedTile().isM_isOnBoard(), move.getM_movedTile().getM_color(), move.getM_movedTile().getM_initialPosition(), move.getM_movedTile().getM_initialOrientation(), move.getFinalCoordinate(), move.getFinalOrientation());
+        }
 
+        else{
+            return new Turtle(move.getM_movedTile().isM_isOnBoard(), move.getM_movedTile().getM_color(), move.getM_movedTile().getM_initialPosition(), move.getM_movedTile().getM_initialOrientation(), move.getFinalCoordinate(), move.getFinalOrientation());
         }
     }
 

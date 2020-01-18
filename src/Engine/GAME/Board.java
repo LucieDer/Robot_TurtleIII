@@ -24,7 +24,9 @@ public class Board {
     private Obstacle movedObstacle = null;
     private Card addedCard = null;
     private boolean isAddingCard = false;
+    private boolean isTurnFinished = false;
     private boolean isFinished = false;
+
 
     public final Move transitionMove;
     public Turtle redTurtle;
@@ -130,9 +132,19 @@ public class Board {
         }
 
         this.deckObstacles = builder.m_deckObstacles;
+
         this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.m_nbOfPlayers, this.redPlayer, this.greenPlayer, this.purplePlayer, this.bluePlayer);
+
         this.transitionMove = builder.transitionMove != null ? builder.transitionMove : null;
 
+    }
+
+    public boolean isTurnFinished() {
+        return isTurnFinished;
+    }
+
+    public void setTurnFinished(boolean turnFinished) {
+        isTurnFinished = turnFinished;
     }
 
     public Obstacle getMovedObstacle() {

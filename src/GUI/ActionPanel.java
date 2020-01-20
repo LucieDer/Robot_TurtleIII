@@ -7,6 +7,7 @@ import Engine.GAME.Move;
 import Engine.PLAYERS.MoveTransition;
 import Engine.TILES.Obstacles.IceWall;
 import Engine.TILES.Tile;
+import Engine.TILES.Turtle;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -81,11 +82,12 @@ public class ActionPanel extends JPanel {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if (isLeftMouseButton(e)) {
-                        if (!board.isFinished() && !board.isTurnFinished()) {
+                        if (!board.isFinished() && !board.isTurnFinished() && !board.getCurrentPlayer().isWinner()) {
+                            executeProgram(table.getRTBoard());
+                            table.getRTBoard().setTurnFinished(true);
                         }
 
-                        executeProgram(table.getRTBoard());
-                        table.getRTBoard().setTurnFinished(true);
+
                     }
                 }
 
@@ -149,7 +151,17 @@ public class ActionPanel extends JPanel {
                         table.getOrientationPanel().reDraw(table.getRTBoard());
                         table.getBoardPanel().drawBoard(table.getRTBoard());
 
-                    }else{
+                    }else if(goForward.isOnJewel()){
+                        //On accède à la tortue et dit qu'il n'est plus sur le plateau
+                        Turtle winningTurtle = (Turtle)board.getSquare(goForward.getM_movedTile().getTilePosition()).getTile();
+                        table.getRTBoard().getCurrentPlayer().setM_isWinner(true);
+                        winningTurtle.setM_isOnBoard(false);
+
+                        //On supprime la tortue du le plateau
+                        table.getRTBoard().getActiveTiles().remove(board.getSquare(goForward.getM_movedTile().getTilePosition()).getTile());
+
+                    }
+                    else{
                         table.getAllHandsPanel().getProgramPanel().redo(table.getRTBoard());
                         table.getAllHandsPanel().getHandCardPanel().redo(table.getRTBoard());
                         table.getOrientationPanel().reDraw(table.getRTBoard());
@@ -275,7 +287,12 @@ public class ActionPanel extends JPanel {
                     if(isRightMouseButton(e)){
                         board.setFinished(false);
                     } else if (isLeftMouseButton(e)) {
-                        if (!board.isFinished()) {
+                        if(board.getCurrentPlayer().isWinner()){
+                            final Move.NullMove nullMove = new Move.NullMove(board, board.getCurrentPlayer().getM_turtle());
+                            final MoveTransition transition = board.getCurrentPlayer().makeMove(nullMove);
+                            table.setRTBoard(transition.getTransitionBoard());
+                        }
+                        else if (!board.isFinished()) {
                             board.setFinished(true);
 
                         } else if (board.isFinished()) {
@@ -356,7 +373,7 @@ public class ActionPanel extends JPanel {
                     if(isRightMouseButton(e)){
                         board.setAddingCard(false);
                     } else if(isLeftMouseButton(e)){
-                        if(!board.isAddingCard() && !board.isTurnFinished() && !board.isFinished()){
+                        if(!board.isAddingCard() && !board.isTurnFinished() && !board.isFinished() && !board.getCurrentPlayer().isWinner()){
                             if(!board.isAddingCard()){
                                 board.setAddingCard(true);
                             }else{
@@ -424,7 +441,7 @@ public class ActionPanel extends JPanel {
                     if(isRightMouseButton(e)){
                         board.setMovedObstacle(null);
                     } else if(isLeftMouseButton(e)){
-                        if(board.getMovedObstacle() == null && !board.isTurnFinished() && !board.isFinished()){
+                        if(board.getMovedObstacle() == null && !board.isTurnFinished() && !board.isFinished() && !board.getCurrentPlayer().isWinner()){
                             board.setMovedObstacle(board.getCurrentPlayer().getM_HandObstacles().getStoneWall());
 
                         }
@@ -476,7 +493,7 @@ public class ActionPanel extends JPanel {
                     if(isRightMouseButton(e)){
                         board.setMovedObstacle(null);
                     } else if(isLeftMouseButton(e)){
-                        if(board.getMovedObstacle() == null && !board.isTurnFinished() && !board.isFinished()){
+                        if(board.getMovedObstacle() == null && !board.isTurnFinished() && !board.isFinished() && !board.getCurrentPlayer().isWinner()){
                             board.setMovedObstacle(board.getCurrentPlayer().getM_HandObstacles().getIceWall());
 
                         }
@@ -513,7 +530,10 @@ public class ActionPanel extends JPanel {
         private String currentStatus;
 
         TurnStatus(Board board){
-            if(board.isFinished()){
+            if (board.getCurrentPlayer().isWinner()){
+                currentStatus = "Ce joueur a gagné. Cliquez sur 'Finir' pour passer au joueur suivant.";
+            }
+            else if(board.isFinished()){
                 currentStatus = "         Cliquez sur les cartes à défausser";
             }else if(!board.isTurnFinished()){
                 currentStatus = "    Choisissez une action";

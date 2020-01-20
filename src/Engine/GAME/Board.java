@@ -368,7 +368,7 @@ public class Board {
         switch (nbOfPlayers){
             case 2:
                 // 2 tortues
-                builder.setTile(new Turtle(true, Color.ROUGE, 0, 1, -90));
+                builder.setTile(new Turtle(true, Color.ROUGE, 7, 4, BoardUtils.TURNED_TO_LEFT));
                 builder.setTile(new Turtle(true, Color.VERT, 0, 5, -90));
 
                 // 1 joyau vert

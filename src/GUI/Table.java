@@ -233,7 +233,7 @@ public class Table {
             add(this.label, BorderLayout.NORTH);
 
             this.label = new JLabel( orientationToString());
-            this.label.setFont(new Font("Verdana",1,18));
+            this.label.setFont(new Font("Verdana",1,14));
             add(this.label, BorderLayout.PAGE_START);
 
             this.deck = new JLabel("Deck :\n" + this.nbInDeck);
@@ -264,6 +264,10 @@ public class Table {
             this.label = new JLabel("Orientation :\n" + orientationToString());
             this.label.setFont(new Font("Verdana",1,10));
             add(this.label, BorderLayout.NORTH);
+
+            this.label = new JLabel( orientationToString());
+            this.label.setFont(new Font("Verdana",1,14));
+            add(this.label, BorderLayout.PAGE_START);
 
             this.deck = new JLabel("Deck :\n" + this.nbInDeck);
             this.deck.setFont(new Font("Verdana",1,10));

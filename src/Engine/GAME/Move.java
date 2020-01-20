@@ -26,7 +26,7 @@ public abstract class Move {
     protected boolean isPutting = false;
     protected boolean isTurning = false;
     protected boolean isLaser = false;
-    protected boolean isOnjewel = false;
+    protected boolean isOnJewel = false;
     protected boolean moveIllegal = true;
 
     //protected static final Move NULL_MOVE = new NullMove();
@@ -78,6 +78,10 @@ public abstract class Move {
 
     public boolean isTurning() {
         return isTurning;
+    }
+
+    public boolean isOnJewel() {
+        return isOnJewel;
     }
 
     public Tile getAttackedTile(){
@@ -252,7 +256,7 @@ public abstract class Move {
             }
             else {
                 if(board.getSquare(this.destinationCoordinate).getTile().getType() == "Joyau"){
-                    this.isOnjewel = true;
+                    this.isOnJewel = true;
                     board.getCurrentPlayer().setM_isWinner(true);
                 }
                 this.finalCoordinate = this.destinationCoordinate;

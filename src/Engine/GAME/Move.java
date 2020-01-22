@@ -254,14 +254,18 @@ public abstract class Move {
                 this.finalOrientation = BoardUtils.TURNED_DOWN;
 
             }
-            else {
-                if(board.getSquare(this.destinationCoordinate).getTile().getType() == "Joyau"){
-                    this.isOnJewel = true;
-                    board.getCurrentPlayer().setM_isWinner(true);
-                }
-                this.finalCoordinate = this.destinationCoordinate;
+            else if (board.getSquare(this.destinationCoordinate).getTile().getType() == "Joyau") {
 
+                    this.isOnJewel = true;
+                    this.moveStatus = MoveStatus.DONE;
+                    board.getCurrentPlayer().setM_isWinner(true);
+                    board.getCurrentPlayer().getM_turtle().setM_isOnBoard(false);
             }
+            else{
+                this.finalCoordinate = this.destinationCoordinate;
+            }
+
+
 
 
 

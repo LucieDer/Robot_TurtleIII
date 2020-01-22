@@ -27,6 +27,8 @@ public class Board {
     private boolean isTurnFinished = false;
     private boolean isFinished = false;
 
+    private int nbOfWinners = 0;
+
 
     public final Move transitionMove;
     public Turtle redTurtle;
@@ -67,6 +69,7 @@ public class Board {
     public HandCards m_BluePlayerHandCards = null;
     public HandObstacles m_BluePlayerHandObstacles = null;
 
+    private List<Player> listOfPlayers = new ArrayList<>();
 
     private final Map<List<Integer>, Square> gameBoard;
     private int m_nbOfPlayers;
@@ -82,6 +85,7 @@ public class Board {
         this.activeTiles = calculateActiveTiles(this.gameBoard);
         this.activeTurtles = calculateActiveTurtles(this.gameBoard);
         this.m_nbOfPlayers = activeTurtles.size();
+
 
         //Attribution des tortues
         this.redTurtle = (Turtle)this.getRedTurtle();
@@ -115,17 +119,26 @@ public class Board {
             case 2:
                 this.redPlayer = new RedPlayer(this);
                 this.greenPlayer = new GreenPlayer(this);
+                listOfPlayers.add(this.redPlayer);
+                listOfPlayers.add(this.greenPlayer);
                 break;
             case 3:
                 this.redPlayer = new RedPlayer(this);
                 this.greenPlayer = new GreenPlayer(this);
                 this.purplePlayer = new PurplePlayer(this);
+                listOfPlayers.add(this.redPlayer);
+                listOfPlayers.add(this.greenPlayer);
+                listOfPlayers.add(this.purplePlayer);
                 break;
             case 4:
                 this.redPlayer = new RedPlayer(this);
                 this.greenPlayer = new GreenPlayer(this);
                 this.purplePlayer = new PurplePlayer(this);
                 this.bluePlayer = new BluePlayer(this);
+                listOfPlayers.add(this.redPlayer);
+                listOfPlayers.add(this.greenPlayer);
+                listOfPlayers.add(this.purplePlayer);
+                listOfPlayers.add(this.bluePlayer);
                 break;
 
 
@@ -137,6 +150,15 @@ public class Board {
 
         this.transitionMove = builder.transitionMove != null ? builder.transitionMove : null;
 
+    }
+
+    public boolean isGameOver(){
+        if(nbOfWinners > m_nbOfPlayers-1){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public boolean isTurnFinished() {
@@ -222,6 +244,14 @@ public class Board {
         return m_nbOfPlayers;
     }
 
+    public int getNbOfWinners() {
+        for (Player player : listOfPlayers){
+            if(player.isWinner()){
+                nbOfWinners++;
+            }
+        }
+        return nbOfWinners;
+    }
 
     public void setM_nbOfPlayers(int m_nbOfPlayers) {
         this.m_nbOfPlayers = m_nbOfPlayers;
@@ -368,7 +398,7 @@ public class Board {
         switch (nbOfPlayers){
             case 2:
                 // 2 tortues
-                builder.setTile(new Turtle(true, Color.ROUGE, 7, 4, BoardUtils.TURNED_TO_LEFT));
+                builder.setTile(new Turtle(true, Color.ROUGE, 0, 2, BoardUtils.TURNED_TO_LEFT));
                 builder.setTile(new Turtle(true, Color.VERT, 0, 5, -90));
 
                 // 1 joyau vert

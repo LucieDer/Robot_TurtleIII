@@ -153,12 +153,9 @@ public class ActionPanel extends JPanel {
 
                     }else if(goForward.isOnJewel()){
                         //On accède à la tortue et dit qu'il n'est plus sur le plateau
-                        Turtle winningTurtle = (Turtle)board.getSquare(goForward.getM_movedTile().getTilePosition()).getTile();
-                        table.getRTBoard().getCurrentPlayer().setM_isWinner(true);
-                        winningTurtle.setM_isOnBoard(false);
+
 
                         //On supprime la tortue du le plateau
-                        table.getRTBoard().getActiveTiles().remove(board.getSquare(goForward.getM_movedTile().getTilePosition()).getTile());
 
                     }
                     else{
@@ -295,7 +292,7 @@ public class ActionPanel extends JPanel {
                         else if (!board.isFinished()) {
                             board.setFinished(true);
 
-                        } else if (board.isFinished()) {
+                        } else if (board.isFinished() && !board.isGameOver()) {
                             //Le joueur pioche
                             while(board.getCurrentPlayer().getM_handCards().getAmount()<5){
                                 //Vérifie si la pioche a moins de 5 cartes, si oui elle redistribue depuis la défausse
@@ -315,6 +312,8 @@ public class ActionPanel extends JPanel {
                                 //redo le AllHands
                                 //redo le log
                             }
+                        } else if(board.isGameOver()){
+                            table.newGame(table.getRTBoard().getM_nbOfPlayers());
                         }
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override

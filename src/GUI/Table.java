@@ -396,7 +396,7 @@ public class Table {
             if(board.getSquare(position).isSquareOccupied()){
 
 
-                if(board.getSquare(position).getTile().getType() == "Tortue"){
+                if(board.getSquare(position).getTile().getType() == "Tortue" && board.getSquare(position).getTile().isM_isOnBoard()){
                     try {
                         String pathname = defaultPieceImagesPath + board.getSquare(position).getTile().getM_color().getColor() +
                                 board.getSquare(position).getTile().getType() + ".png";
